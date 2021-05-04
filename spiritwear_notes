@@ -1,0 +1,45 @@
+spiritwear offering script
+needs one script to help build offering
+then another script for inputting roster data and
+exporting prod files
+
+
+url for getting spirit site data:
+	https://www.boombah.com/app/site/hosting/scriptlet.nl?script=1356&deploy=1&compid=460511&h=b071363468e747c7d5a9&action=will&programId=laW-eWd-AJT-8sy
+	https://www.boombah.com/app/site/hosting/scriptlet.nl?script=1356&deploy=1&compid=460511&h=b071363468e747c7d5a9&action=will&programId=
+
+
+for building offering:
+
+input:
+	program id, entered by user in dialog
+
+output:
+	a bunch of recolored prepress files (perhaps with artwork imported from program folder "graphics" folders)
+	sample folder formatting:
+		[program id]_master folder
+			pngs folder
+			prepresses folder
+				FD-161_1000_Prepress.ai
+				FD-161Y_1000_Prepress.ai
+				etc
+			[program id]_offering.ai // this is the main "master" file that contains all the film strips and param color info
+
+expected behavior
+	input a program id, for each unique garment, open a blank converted template
+
+
+for producing prod files:
+
+input
+	program id, entered by user in dialog
+
+output:
+	a folder of print ready files with roster info input 
+
+expected behavior:
+	user runs script and enters program id
+	parse data to define an array of garments needed and populate the necessary roster data for each
+	navigate to program folder and identify prepresses folder
+	loop garments needed array to open each necessary prepress and create a production file for each 
+		garment which includes each roster entry as individual print ready pdfs.
