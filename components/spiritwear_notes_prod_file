@@ -1,0 +1,14 @@
+/Users/will.dowling/Desktop/Spirit_Sites/UFg-qvC-4D5-z2t_2021 Ohio Slam Force Spirit Wear Shop
+
+pseudo code
+
+run script
+prompt user for program id
+curl data from netsuite
+parse data with parseSpiritData() function
+for each garment
+	open prepress file
+	identify sizes needed
+	copy art to new prod file
+	
+

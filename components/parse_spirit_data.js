@@ -1,5 +1,5 @@
 // #target Illustrator
-function parseSpiritData()
+function parseSpiritData(data)
 {
 	
 	
@@ -8,10 +8,10 @@ function parseSpiritData()
 	var curGarGroup,curGar,curGarNeeded;
 	var curMid,curSize,curRoster,curLine,curLabel,curStyleNum;
 	var curGN;
-	for(var gar in blah)
+	for(var gar in data)
 	{
 		curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.lastIndexOf("-")+5)
-		curGarGroup = blah[gar];
+		curGarGroup = data[gar];
 		curLabel = curGarGroup[0].mid + "_" + curStyleNum;
 		curGN = garmentsNeeded[curLabel] = {};
 		curGN.roster = {};
@@ -20,6 +20,7 @@ function parseSpiritData()
 		{
 			curGar = curGarGroup[x];
 			curGN.mid = curGar.mid;
+			curGN.styleNum = curStyleNum;
 
 			curSize = curGar.itemtext.substring(curGar.itemtext.lastIndexOf("-")+1,curGar.itemtext.length);
 

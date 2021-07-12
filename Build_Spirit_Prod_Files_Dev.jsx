@@ -1,15 +1,11 @@
 /*
 
-Script Name: Build_Spirit_Offering
+Script Name: Build_Spirit_Prod_Files
 Author: William Dowling
-Build Date: 01 April, 2021
+Build Date: 23 February, 2018
 Description: query netsuite for JSON data for a given order number,
-				parse the data, 
-				for each garment in the data
-					locate "Converted_Template" file
-					open file and save to local job folder
-					recolor the document per the paramcolors in master file
-					save document
+				parse the data, create new document, copy necessary
+				artwork to new document, input roster data
 	
 	
 */
@@ -20,7 +16,7 @@ Description: query netsuite for JSON data for a given order number,
 function container()
 {
 	var valid = true;
-	var scriptName = "build_spirit_offering";
+	var scriptName = "build_spirit_prod_files";
 
 	function getUtilities()
 	{
@@ -133,52 +129,28 @@ function container()
 	/*****************************************************************************/
 	//=================================  Procedure  =================================//
 
+	var orderData;
+	var garmentsNeeded;
+	var masterFile;
 
-	// if(!app.documents.length)
-	// {
-	// 	alert("Please open the Master File First.");
-	// 	valid = false;
-	// 	return valid;
-	// }
+	if(valid)
+	{
+		var programId = getProgramId();
+	}
 
-
-	var filesToClose = []; //these are the youth files that are not needed after merging with adult
-	var programId = getProgramId();
-
+	if(valid)
+	{
+		orderData = getSpiritData(programId);
+	}
 	
-
-
-	if (valid)
+	if(valid)
 	{
-		var data = getSpiritData();
-		if (!data) valid = false;
+		garmentsNeeded = parseSpiritData(orderData);
 	}
 
-	if (valid)
+	if(valid)
 	{
-		var garmentsNeeded = parseSpiritData(data);
-		if (!garmentsNeeded) valid = false;
-	}
-
-	if (valid)
-	{
-		var masterFile = openMaster(programId);
-
-		//dev mode to speed things up
-		// var masterFile = app.activeDocument;
-	}
-
-	if (valid && garmentsNeeded)
-	{
-		buildOffering(garmentsNeeded);
-	}
-
-	if(valid && filesToClose.length)
-	{
-		for(var x= filesToClose.length-1;x>=0;x--)
-		{
-			filesToClose[x].close(SaveOptions.DONOTSAVECHANGES);
-		}
+		masterLoop(garmentsNeeded);
 	}
 
 
