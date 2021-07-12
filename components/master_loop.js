@@ -101,12 +101,17 @@ function masterLoop(garmentsNeeded)
 		ppLay.locked = false;
 		ppLay.visible = true;
 
-		//loop the roster object
+		//loop the roster object and select
+		//all the necessary sizes and duplicate them
+		//to prod file
 		var curSizeLay;
+		var tmpLay = ppLay.layers.add();
+		var tmpGroup = tmpLay.groupItems.add();
 		for(var size in curGarment.roster)
 		{
 			curSizeLay = findSpecificLayer(ppLay,size,"any");
 			curSizeLay.hasSelectedArtwork = true;
+				
 		}
 
 	}
