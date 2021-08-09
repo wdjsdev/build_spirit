@@ -132,6 +132,8 @@ function container()
 	var orderData;
 	var garmentsNeeded;
 	var masterFile;
+	var errorList = [];
+	var messageList = [];
 
 	if(valid)
 	{

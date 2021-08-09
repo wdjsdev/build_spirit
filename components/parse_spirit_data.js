@@ -1,4 +1,4 @@
-// #target Illustrator
+
 function parseSpiritData(data)
 {
 	
@@ -6,10 +6,12 @@ function parseSpiritData(data)
 	var garmentsNeeded = {};
 
 	var curGarGroup,curGar,curGarNeeded;
-	var curMid,curSize,curRoster,curLine,curLabel,curStyleNum;
+	var curMid,curSize,curRoster,curLine,curLabel,curStyleNum,curPlayer;
 	var curGN;
+	var playerLen = 0;
 	for(var gar in data)
 	{
+		
 		curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.lastIndexOf("-")+5)
 		curGarGroup = data[gar];
 		curLabel = curGarGroup[0].mid + "_" + curStyleNum;
@@ -26,20 +28,29 @@ function parseSpiritData(data)
 
 			if(!curGN.roster[curSize])
 			{
-				curGN.roster[curSize] = [];
+				curGN.roster[curSize] = {"players":[]};
 			}
 
-			if(curGar.playername || curGar.playernumber)
+			curPlayer = {name:"",number:""};
+
+			
+
+			if(curGar.playername)
 			{
-				curGN.roster[curSize].push({name:curGar.playername,number:curGar.playernumber})
+				curPlayer.name = curGar.playername;
 			}
-			else
+
+			if(curGar.playernumber)
 			{
-				curGN.roster[curSize].push({name:"",number:""})
+				curPlayer.number = curGar.playernumber;
 			}
+
+			curGN.roster[curSize].players.push(curPlayer);
+
+			curGN.roster[curSize].qty = x+1;
 		}
+		playerLen = 0;
 	}
 
 	return garmentsNeeded;
 }
-// test();

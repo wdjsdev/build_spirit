@@ -65,8 +65,9 @@ function masterLoop(garmentsNeeded)
 
 
 		//create the prod file
-		prodFile = File(prodFolderPath + garCode + "_prod.ai");
+		prodFile = File(prodFolderPath + programId + "_" + garCode + "_prod.ai");
 		prodDoc = app.documents.add();
+		prodDoc.layers[0].name = "Artwork";
 		prodDoc.saveAs(prodFile);
 
 		//open the prepress
@@ -74,6 +75,8 @@ function masterLoop(garmentsNeeded)
 
 		duplicateArtToProdFile(curGarment);
 		
+		prodDoc.activate();
+		inputRosterData(curGarment.roster);
 
 
 
@@ -107,12 +110,30 @@ function masterLoop(garmentsNeeded)
 		var curSizeLay;
 		var tmpLay = ppLay.layers.add();
 		var tmpGroup = tmpLay.groupItems.add();
+		
 		for(var size in curGarment.roster)
 		{
+			prepressDoc.selection = null;
 			curSizeLay = findSpecificLayer(ppLay,size,"any");
 			curSizeLay.hasSelectedArtwork = true;
-				
+			for(var s= curSizeLay.pageItems.length -1;s>=0;s--)
+			{
+				curSizeLay.pageItems[s].duplicate(tmpGroup);
+			}
 		}
+
+		//duplicate the art to the production file
+		var prodTmpGroup = tmpGroup.duplicate(prodDoc);
+
+		//ungroup the art
+		var curItem;
+		for(var x=prodTmpGroup.pageItems.length-1;x>=0;x--)
+		{
+			curItem = prodTmpGroup.pageItems[x];
+			curItem.moveToBeginning(prodTmpGroup.layer);	
+			setupRosterGroup(curItem);
+		}
+		
 
 	}
 }
