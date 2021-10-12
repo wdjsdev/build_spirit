@@ -20,14 +20,24 @@ function masterLoop(garmentsNeeded)
 
 
 
-	var jobFolderPath = "/Volumes/Macintosh HD/Users/will.dowling/Desktop/Spirit_Sites/UFg-qvC-4D5-z2t_2021 Ohio Slam Force Spirit Wear Shop/";
+	
 	var prepressFilePath = jobFolderPath + "Prepress/";
+
+	if(!Folder(prepressFilePath).exists)
+	{
+		errorList.push("No Prepress folder found.");
+		valid = false;
+		return;
+	}
+
+
 	var prepressFile;
 	var prepressDoc;
 	var ppLay; //prepress layer
 
 
-	var prodFolderPath = jobFolderPath + "IHFD/";
+	var prodFolderPath;
+	var prodFolder;
 	var pdfsPath;
 	var pdfsFolder;
 
@@ -58,10 +68,16 @@ function masterLoop(garmentsNeeded)
 		}
 
 
+		prodFolderPath = jobFolderPath + "IHFD/";
+		prodFolder = Folder(prodFolderPath);
+		if(!prodFolder.exists)prodFolder.create();
+
+
 		//setup pdfs folder for exported items
-		pdfsPath = prodFolderPath + garCode + "_PDFs";
-		pdfsFolder = Folder(pdfsPath);
-		if(!pdfsFolder.exists)pdfsFolder.create();
+		// pdfsPath = prodFolderPath + programId + "_" + garCode + "_PDFs";
+		// pdfsFolder = Folder(pdfsPath);
+		// if(!pdfsFolder.exists)pdfsFolder.create();
+
 
 
 		//create the prod file
@@ -78,9 +94,10 @@ function masterLoop(garmentsNeeded)
 		prodDoc.activate();
 		inputRosterData(curGarment.roster);
 
-
-
-		break;
+		colorFixer();
+		initAdjustProdFile();
+		prodFileSaveLocation = pdfsPath;
+		createAdjustmentDialog();
 	}	
 
 

@@ -25,7 +25,7 @@
 
 function buildOffering(gn)
 {
-	var jobFolderPath = desktopPath + "Spirit_Sites/" + getDate() + "/" + programId + "/";
+	var jobFolderPath = desktopPath + "Spirit_Sites/" + programId + "/";
 	var jobFolder = Folder(jobFolderPath);
 	if (!jobFolder.exists) jobFolder.create();
 

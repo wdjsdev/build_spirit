@@ -86,20 +86,28 @@ function container()
 	/*****************************************************************************/
 	//==============================  Components  ===============================//
 
+
+	//first get the build prod file components
+
+	var buildProdCompPath = componentsPath + "build_prod_file_beta"
+	var buildProdCompFiles = getComponents(buildProdCompPath);
+
+	for (var cf = 0, len = buildProdCompFiles.length; cf < len; cf++)
+	{
+		curComponent = buildProdCompFiles[cf].fullName;
+		eval("#include \"" + curComponent + "\"");
+		log.l("included: " + buildProdCompFiles[cf].name);
+	}
+
+
+
+
+
 	var devComponents = desktopPath + "/automation/build_spirit/components";
 	var prodComponents = componentsPath + "/build_spirit";
 
-	var compFiles;
-	if($.fileName.indexOf("Dev.jsx") > -1)
-	{
-		compFiles = includeComponents(devComponents, devComponents, true);
-	}
-	else
-	{
-		compFiles = includeComponents(prodComponents, prodComponents, true);
-	}
+	var compFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? devComponents : prodComponents)
 
-	// var compFiles = includeComponents(devComponents, prodComponents, false);
 	if (compFiles && compFiles.length)
 	{
 		var curComponent;
@@ -131,6 +139,7 @@ function container()
 
 	var orderData;
 	var garmentsNeeded;
+	var jobFolderPath;
 	var masterFile;
 	var errorList = [];
 	var messageList = [];
@@ -138,6 +147,11 @@ function container()
 	if(valid)
 	{
 		var programId = getProgramId();
+	}
+
+	if(valid)
+	{
+		jobFolderPath = getJobFolderPath();
 	}
 
 	if(valid)

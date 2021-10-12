@@ -143,10 +143,12 @@ function container()
 
 
 	var filesToClose = []; //these are the youth files that are not needed after merging with adult
-	var programId = getProgramId();
 
+	if(valid)
+	{
+		var programId = getProgramId();	
+	}
 	
-
 
 	if (valid)
 	{
