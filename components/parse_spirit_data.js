@@ -23,7 +23,7 @@ function parseSpiritData(data)
 
 			if(curGar.style.match(curGar.mid))
 			{
-				curGN.mid = curGar.style.match(/^[^-]*-[^-]*/);
+				curGN.mid = curGar.style.match(/^[^-]*-[^-]*/)[0];
 			}
 			else
 			{
