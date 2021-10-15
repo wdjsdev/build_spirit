@@ -89,7 +89,8 @@ function container()
 
 	//first get the build prod file components
 
-	var buildProdCompPath = componentsPath + "build_prod_file_beta"
+	// var buildProdCompPath = componentsPath + "build_prod_file_beta";
+	var buildProdCompPath = desktopPath + "automation/build_prod_file/components";
 	var buildProdCompFiles = getComponents(buildProdCompPath);
 
 	for (var cf = 0, len = buildProdCompFiles.length; cf < len; cf++)
@@ -144,6 +145,30 @@ function container()
 	var errorList = [];
 	var messageList = [];
 
+
+	var prepressFolderPath;
+	var prepressFile;
+	var prepressDoc;
+	var ppLay; //prepress layer
+
+
+	var prodFolderPath;
+	var prodFolder;
+	var prodFileSaveLocation;
+	var pdfsPath;
+	var pdfsFolder;
+
+
+	var curGarment;
+	var garCode;
+	
+
+	
+	var prodDoc;
+	var prodFile;
+
+
+
 	if(valid)
 	{
 		var programId = getProgramId();
@@ -152,6 +177,13 @@ function container()
 	if(valid)
 	{
 		jobFolderPath = getJobFolderPath();
+		prepressFolderPath = jobFolderPath + "Prepress/";
+
+		if(!Folder(prepressFolderPath).exists)
+		{
+			errorList.push("No Prepress folder found.");
+			valid = false;
+		}
 	}
 
 	if(valid)
