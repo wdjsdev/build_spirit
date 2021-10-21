@@ -87,8 +87,8 @@ function buildOffering(gn)
 		}
 		else
 		{
-			errorList.push("No prepress files found for " + garCode);
-			log.e("No prepress files found for " + garCode);
+			errorList.push("No converted template files found for " + garCode);
+			log.e("No converted template files found for " + garCode);
 		}
 
 	}

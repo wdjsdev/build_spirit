@@ -7,8 +7,8 @@ function getCts(ctLocations,garCode,mid)
 	var youthPath = ctLocations[youthMid] || undefined;
 
 
-	var adultFile = File(adultPath ? adultPath + "/" + garCode + ".ait" : File.selectDialog("Please select the Converted Template file for " + garCode)); 
-	var youthFile = File(youthPath ? youthPath + "/" + garCode.replace(mid,youthMid) + ".ait" : File.selectDialog("Please select the Converted Template file for " + garCode.replace(mid,youthMid))); 
+	var adultFile = File(adultPath ? adultPath + "/" + garCode + ".ait" : File.openDialog("Please select the Converted Template file for " + garCode)); 
+	var youthFile = File(youthPath ? youthPath + "/" + garCode.replace(mid,youthMid) + ".ait" : File.openDialog("Please select the Converted Template file for " + garCode.replace(mid,youthMid))); 
 	
 	if(adultFile && adultFile.exists)
 	{

@@ -1,4 +1,3 @@
-
 function parseSpiritData(data)
 {
 	
@@ -7,30 +6,24 @@ function parseSpiritData(data)
 
 	var curGarGroup,curGar,curGarNeeded;
 	var curSize,curRoster,curLine,curLabel,curStyleNum,curPlayer;
-	var curGN;
+	var curGN,curMid;
 	var playerLen = 0;
 	for(var gar in data)
 	{
-		
-		curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.lastIndexOf("-")+5)
+		//sample gar value = "FD-1873_FD-1873-FD-1873Y-1027"
+		// curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.lastIndexOf("-")+5)
+		curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.length);
 		curGarGroup = data[gar];
-		curLabel = curGarGroup[0].mid + "_" + curStyleNum;
+
+
+		curMid = getMidFromLabel(gar);
+		curLabel = curMid + "_" + curStyleNum;
 		curGN = garmentsNeeded[curLabel] = {};
 		curGN.roster = {};
 		for(var x=0;x<curGarGroup.length;x++)
 		{
 			curGar = curGarGroup[x];
-
-			if(curGar.style.match(curGar.mid))
-			{
-				curGN.mid = curGar.style.match(/^[^-]*-[^-]*/)[0];
-			}
-			else
-			{
-				curGN.mid = curGar.mid;	
-			}
-			
-
+			curGN.mid = curMid;
 			curGN.styleNum = curStyleNum;
 
 			curSize = curGar.itemtext.substring(curGar.itemtext.lastIndexOf("-")+1,curGar.itemtext.length);

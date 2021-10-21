@@ -3,9 +3,12 @@ function getProgramId()
 	var programId;
 	var prefPath = documentsPath + "build_spirit_prefs/"
 
+	if(!Folder(prefPath).exists)
+		Folder(prefPath).create();
+
 	var idRegex = /[\da-z]{3}-[\da-z]{3}-[\da-z]{3}/i;
 
-	//get the previous program id
+	//get the previously used program id
 	var prevProgramId = "";
 	var prevProgramIdFile = File(prefPath + "prev_design_number.txt");
 	prevProgramIdFile.open("r");
@@ -41,6 +44,14 @@ function getProgramId()
 				
 			})
 	w.show();
+
+	if(programId && programId !== "")
+	{
+		prevProgramIdFile.open("w");
+		prevProgramId = prevProgramIdFile.write(programId);
+		prevProgramIdFile.close();	
+	}
+	
 
 	return programId;
 

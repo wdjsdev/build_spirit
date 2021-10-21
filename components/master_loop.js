@@ -68,7 +68,6 @@ function masterLoop(garmentsNeeded)
 		getSaveLocation();
 		createAdjustmentDialog();
 
-		break;
 	}	
 
 
