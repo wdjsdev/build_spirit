@@ -12,7 +12,9 @@ function parseSpiritData(data)
 	{
 		//sample gar value = "FD-1873_FD-1873-FD-1873Y-1027"
 		// curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.lastIndexOf("-")+5)
+
 		curStyleNum = gar.substring(gar.lastIndexOf("-")+1, gar.length);
+		curStyleNum = curStyleNum.replace(/[\s-_].*/ig,"");
 		curGarGroup = data[gar];
 
 

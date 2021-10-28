@@ -7,32 +7,31 @@ function masterLoop(garmentsNeeded)
 
 	for(var gar in garmentsNeeded)
 	{
-		garments.push(garmentsNeeded[gar]);
+		curGarment = garmentsNeeded[gar];
+		curGarment.garCode = curGarment.mid.replace(/[yg]/ig,"") + "_" + curGarment.styleNum;
+		garments.push(curGarment);
 	}
 
-	////////////////////////
-	////////ATTENTION://////
-	//
-	//		put some logic here to allow for selecting
-	//		which garments to process
-	//
-	////////////////////////
+	garments = chooseGarmentsToProcess(garments);
 
 
 	for(var ml=0,len=garments.length;ml<len;ml++)
 	{
 		curGarment = garments[ml];
-		curGarment.garCode = garCode = curGarment.mid + "_" + curGarment.styleNum;
-		prepressFile = File(prepressFolderPath + garCode + ".ai");
+		// curGarment.garCode = garCode = curGarment.mid.replace(/[yg]/ig,"") + "_" + curGarment.styleNum;
+		
+
+		// prepressFile = File(prepressFolderPath + garCode + ".ai");
+		prepressFile = findPrepressFile(curGarment.garCode);
 		
 
 		//if there's no prepress file for this.. send an
 		//log an error and move on
-		if(!prepressFile.exists)
+		if(!prepressFile || !prepressFile.exists)
 		{
-			log.e("Failed to find a prepress for: " + garCode + ".ai");
-			errorList.push("Failed to find a prepress for: " + garCode + ".ai");
-			continue;
+			log.e("Failed to find a prepress for: " + curGarment.garCode + ".ai");
+			errorList.push("Failed to find a prepress for: " + curGarment.garCode + ".ai");
+			continue;	
 		}
 
 
@@ -49,7 +48,7 @@ function masterLoop(garmentsNeeded)
 
 
 		//create the prod file
-		prodFile = File(prodFolderPath + programId + "_" + garCode + "_prod.ai");
+		prodFile = File(prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai");
 		prodDoc = app.documents.add();
 		prodDoc.layers[0].name = "Artwork";
 		prodDoc.saveAs(prodFile);
@@ -67,6 +66,7 @@ function masterLoop(garmentsNeeded)
 		prodFileSaveLocation = pdfsPath;
 		getSaveLocation();
 		createAdjustmentDialog();
+		prepressDoc.close(SaveOptions.DONOTSAVECHANGES);
 
 	}	
 

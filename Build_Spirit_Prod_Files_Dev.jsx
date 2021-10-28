@@ -89,10 +89,18 @@ function container()
 
 	//first get the build prod file components
 
-	// var buildProdCompPath = componentsPath + "build_prod_file_beta";
-	var buildProdCompPath = desktopPath + "automation/build_prod_file/components";
-	var buildProdCompFiles = getComponents(buildProdCompPath);
+	var buildProdCompPath = componentsPath + "build_prod_file_beta";
+	var buildProdCompDevPath = desktopPath + "automation/build_prod_file/components";
+	var buildProdCompFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? buildProdCompDevPath : prodComponents)
 
+	if(!buildProdCompFiles || !buildProdCompFiles.length)
+	{
+		errorList.push("Failed to find the necessary components.");
+		log.e("No components were found.");
+		valid = false;
+		return valid;
+	}
+	
 	for (var cf = 0, len = buildProdCompFiles.length; cf < len; cf++)
 	{
 		curComponent = buildProdCompFiles[cf].fullName;
@@ -107,7 +115,7 @@ function container()
 	var devComponents = desktopPath + "/automation/build_spirit/components";
 	var prodComponents = componentsPath + "/build_spirit";
 
-	var compFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? devComponents : prodComponents)
+	var compFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? devComponents : prodComponents);
 
 	if (compFiles && compFiles.length)
 	{

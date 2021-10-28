@@ -1,6 +1,6 @@
 function getJobFolderPath()
 {
-	var jfPath = desktopPath + "/Spirit_Sites/";
+	var jfPath = desktopPath + "Spirit_Sites/";
 	var foundProgramId = false;
 
 
