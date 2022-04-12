@@ -63,8 +63,9 @@ function masterLoop(garmentsNeeded)
 
 		colorFixer();
 		initAdjustProdFile();
-		prodFileSaveLocation = pdfsPath;
-		getSaveLocation();
+		// prodFileSaveLocation = pdfsPath;
+		// getSaveLocation();
+		log.l("prodFileSaveLocation = " + prodFileSaveLocation);
 		createAdjustmentDialog();
 		prepressDoc.close(SaveOptions.DONOTSAVECHANGES);
 

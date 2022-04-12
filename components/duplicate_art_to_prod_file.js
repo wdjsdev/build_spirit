@@ -21,13 +21,13 @@ function duplicateArtToProdFile(curGarment)
 	//all the necessary sizes and duplicate them
 	//to prod file
 	var curSizeLay;
-	var tmpLay = ppLay.layers.add();
+	var tmpLay = app.activeDocument.layers.add();
 	var tmpGroup = tmpLay.groupItems.add();
 	
 	for(var size in curGarment.roster)
 	{
 		prepressDoc.selection = null;
-		curSizeLay = findSpecificLayer(ppLay,size,"any");
+		curSizeLay = findSpecificLayer(ppLay,size,"imatch");
 		curSizeLay.hasSelectedArtwork = true;
 		for(var s= curSizeLay.pageItems.length -1;s>=0;s--)
 		{
@@ -46,6 +46,6 @@ function duplicateArtToProdFile(curGarment)
 		curItem.moveToBeginning(prodTmpGroup.layer);	
 		setupRosterGroup(curItem);
 	}
-	
+	tmpLay.remove();
 
 }

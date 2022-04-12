@@ -11,7 +11,7 @@ function getMidFromLabel(label)
 
 	
 
-	if(!secondCode.match(firstCode))
+	if(!secondCode.match(firstCode) || firstCode.match(/[yg]/i))
 	{
 		result = secondCode.substring(0,nthIndex(secondCode,"-",2));
 	}

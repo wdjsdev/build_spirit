@@ -63,25 +63,39 @@ function buildOffering(gn)
 		return;
 	}
 
+	var garments = [];
 
-	var curGarment, curPrepress, ctPath, paramGroup;
-	var curCts = [];
-	for (var garCode in gn)
+
+	for(var gar in gn)
 	{
+		curGarment = gn[gar];
+		curGarment.garCode = curGarment.mid.replace(/[yg]/ig,"") + "_" + curGarment.styleNum;
+		garments.push(curGarment);
+	}
+
+	garments = chooseGarmentsToProcess(garments);
+
+	var curGarment, curPrepress, ctPath, paramGroup,garCode;
+	var curCts = [];
+	// for (var garCode in gn)
+	for(var x=0;x<garments.length;x++)
+	{
+		curGarment = garments[x];
+		garCode = curGarment.garCode;
 		log.l("curGarment = " + garCode);
+
 		if(garCode.match(/[gy]/i))
 		{
 			log.l("skipping " + garCode)
 			continue;
 		}
 
-		curGarment = gn[garCode];
 
 		curCts = getCts(ctLocations,garCode,curGarment.mid)
 
 		if(curCts.length)
 		{
-			paramGroup = findSpecificPageItem(paramLayer,curGarment.mid + "-" + curGarment.styleNum,"imatch");
+			paramGroup = findSpecificPageItem(paramLayer,curGarment.garCode.replace("_","-"),"imatch");
 			curPrepress = createPrepress(curCts,paramGroup);
 			curPrepress.saveAs(File(prepressPath + garCode + ".ai"));
 		}

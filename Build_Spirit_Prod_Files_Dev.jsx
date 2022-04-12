@@ -91,7 +91,8 @@ function container()
 
 	var buildProdCompPath = componentsPath + "build_prod_file_beta";
 	var buildProdCompDevPath = desktopPath + "automation/build_prod_file/components";
-	var buildProdCompFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? buildProdCompDevPath : prodComponents)
+	var buildProdCompFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? buildProdCompDevPath : buildProdCompPath)
+	// var buildProdCompFiles = getComponents(buildProdCompDevPath);
 
 	if(!buildProdCompFiles || !buildProdCompFiles.length)
 	{
@@ -100,7 +101,7 @@ function container()
 		valid = false;
 		return valid;
 	}
-	
+
 	for (var cf = 0, len = buildProdCompFiles.length; cf < len; cf++)
 	{
 		curComponent = buildProdCompFiles[cf].fullName;
@@ -185,7 +186,10 @@ function container()
 	if(valid)
 	{
 		jobFolderPath = getJobFolderPath();
-		prepressFolderPath = jobFolderPath + "Prepress/";
+	}
+	if(valid)
+	{
+		prepressFolderPath = jobFolderPath + "Prepress_" + programId + "/";
 
 		if(!Folder(prepressFolderPath).exists)
 		{
@@ -197,6 +201,7 @@ function container()
 	if(valid)
 	{
 		orderData = getSpiritData(programId);
+		writeReadMe(Folder("~/Desktop/temp/"),JSON.stringify(orderData));
 	}
 	
 	if(valid)

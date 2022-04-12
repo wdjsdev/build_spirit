@@ -8,6 +8,9 @@ function getJobFolderPath()
 	if (!Folder(jfPath).exists)
 	{
 		Folder(jfPath).create();
+		errorList.push("Please copy the program folder to /Desktop/Spirit_Sites/ and try again.");
+		valid = false;
+		return undefined;
 	}
 
 	var orderFolders = Folder(jfPath).getFiles();
