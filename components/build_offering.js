@@ -36,7 +36,7 @@ function buildOffering(gn)
 
 
 	//save master file to local drive folder
-	// masterFile.saveAs(File(jobFolderPath + masterFile.name));
+	masterFile.saveAs(File(jobFolderPath + masterFile.name));
 
 	//get param colors layer
 	var paramLayer = findSpecificLayer(masterFile.layers, "param", "any");

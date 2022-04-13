@@ -158,10 +158,16 @@ function container()
 
 	if (valid)
 	{
-		// var masterFile = openMaster(programId);
 
-		//dev mode to speed things up
-		var masterFile = app.activeDocument;
+		if(documents.length && app.activeDocument.name.match(programId))
+		{
+			var masterFile = app.activeDocument;
+		}
+		else
+		{
+			var masterFile = openMaster(programId);
+		}
+		
 	}
 
 	// if (valid)
