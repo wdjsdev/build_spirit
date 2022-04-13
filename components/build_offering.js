@@ -29,14 +29,14 @@ function buildOffering(gn)
 	var jobFolder = Folder(jobFolderPath);
 	if (!jobFolder.exists) jobFolder.create();
 
-	var prepressPath = jobFolderPath + "prepress/";
+	var prepressPath = jobFolderPath + "prepress_" + programId + "/";
 	var prepressFolder = Folder(prepressPath);
 	if (!prepressFolder.exists) prepressFolder.create();
 
 
 
 	//save master file to local drive folder
-	masterFile.saveAs(File(jobFolderPath + masterFile.name));
+	// masterFile.saveAs(File(jobFolderPath + masterFile.name));
 
 	//get param colors layer
 	var paramLayer = findSpecificLayer(masterFile.layers, "param", "any");
@@ -51,11 +51,7 @@ function buildOffering(gn)
 
 	//get the converted template locations database
 	var ctlPath = dataPath + "build_mockup_data/converted_template_locations_database.js";
-	try
-	{
-		eval("#include \"" + ctlPath + "\"");
-	}
-	catch (e)
+	if(!File(ctlPath).exists)
 	{
 		log.e("Failed to find the converted templates location path.::e = " + e + "::e.line = " + e.line)
 		errorList.push("Couldn't find the appropriate CT Database...");
@@ -63,47 +59,39 @@ function buildOffering(gn)
 		return;
 	}
 
+	eval("#include \"" + ctlPath + "\"");
+
 	var garments = [];
 
-
-	for(var gar in gn)
+	arrayFromContainer(paramLayer,"groupItems").forEach(function(curGroup)
 	{
-		curGarment = gn[gar];
-		curGarment.garCode = curGarment.mid.replace(/[yg]/ig,"") + "_" + curGarment.styleNum;
-		garments.push(curGarment);
-	}
+		garments.push(curGroup.name);
+	})
+
 
 	garments = chooseGarmentsToProcess(garments);
 
-	var curGarment, curPrepress, ctPath, paramGroup,garCode;
-	var curCts = [];
-	// for (var garCode in gn)
-	for(var x=0;x<garments.length;x++)
-	{
-		curGarment = garments[x];
-		garCode = curGarment.garCode;
-		log.l("curGarment = " + garCode);
+	
 
-		if(garCode.match(/[gy]/i))
-		{
-			log.l("skipping " + garCode)
-			continue;
-		}
-
-
-		curCts = getCts(ctLocations,garCode,curGarment.mid)
-
+	garments.forEach(function(curGarCode){
+		log.l("cur garment code = " + curGarCode);
+		var curPrepress, paramGroup;
+		var curCts = getCts(ctLocations,curGarCode);
 		if(curCts.length)
 		{
-			paramGroup = findSpecificPageItem(paramLayer,curGarment.garCode.replace("_","-"),"imatch");
+			paramGroup = findSpecificPageItem(paramLayer,curGarCode,"imatch");
 			curPrepress = createPrepress(curCts,paramGroup);
-			curPrepress.saveAs(File(prepressPath + garCode + ".ai"));
+			curPrepress.saveAs(File(prepressPath + curGarCode + ".ai"));
+
+			//attention//
+			// add logic here to bring in artwork from the master file.. logos, names, numbers..
 		}
 		else
 		{
-			errorList.push("No converted template files found for " + garCode);
-			log.e("No converted template files found for " + garCode);
+			errorList.push("No converted template files found for " + curGarCode);
+			log.e("No converted template files found for " + curGarCode);
 		}
 
-	}
+	})
+	
 }

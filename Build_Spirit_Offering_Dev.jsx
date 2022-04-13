@@ -36,7 +36,7 @@ function container()
 			devUtilitiesPreferenceFile.open("r");
 			var prefContents = devUtilitiesPreferenceFile.read();
 			devUtilitiesPreferenceFile.close();
-			if (prefContents === "true")
+			if (prefContents.match(/true/i))
 			{
 				utilPath = "~/Desktop/automation/utilities/";
 				ext = ".js";
@@ -158,21 +158,25 @@ function container()
 
 	if (valid)
 	{
-		var garmentsNeeded = parseSpiritData(data);
-		if (!garmentsNeeded) valid = false;
-	}
-
-	if (valid)
-	{
-		var masterFile = openMaster(programId);
+		// var masterFile = openMaster(programId);
 
 		//dev mode to speed things up
-		// var masterFile = app.activeDocument;
+		var masterFile = app.activeDocument;
 	}
 
-	if (valid && garmentsNeeded)
-	{
-		buildOffering(garmentsNeeded);
+	// if (valid)
+	// {
+	// 	var garmentsNeeded = parseSpiritData(data);
+	// 	if (!garmentsNeeded) valid = false;
+	// }
+
+	// if (valid && garmentsNeeded)
+	// {
+	// 	buildOffering(garmentsNeeded);
+	// }
+
+	if (valid) {
+		buildOffering();
 	}
 
 	if(valid && filesToClose.length)

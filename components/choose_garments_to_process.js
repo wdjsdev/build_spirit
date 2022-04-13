@@ -1,12 +1,6 @@
-function chooseGarmentsToProcess(garments)
+function chooseGarmentsToProcess(garNames)
 {
 	var result = [];
-	
-	var garNames = [];
-	for(var x=0;x<garments.length;x++)
-	{
-		garNames.push(garments[x].garCode);
-	}
 
 	var chosenGarments = chooseFromListbox(garNames,"which garments");
 
@@ -14,7 +8,7 @@ function chooseGarmentsToProcess(garments)
 	{
 		for(var x=0;x<chosenGarments.length;x++)
 		{
-			result.push(garments[garNames.indexOf(chosenGarments[x])])
+			result.push(garNames[garNames.indexOf(chosenGarments[x])])
 		}
 	}
 	return result;
