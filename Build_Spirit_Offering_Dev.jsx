@@ -150,11 +150,11 @@ function container()
 	}
 	
 
-	if (valid)
-	{
-		var data = getSpiritData();
-		if (!data) valid = false;
-	}
+	// if (valid)
+	// {
+	// 	var data = getSpiritData();
+	// 	if (!data) valid = false;
+	// }
 
 	if (valid)
 	{
