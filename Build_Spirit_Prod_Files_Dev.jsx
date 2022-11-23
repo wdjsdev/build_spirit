@@ -13,63 +13,92 @@ Description: query netsuite for JSON data for a given order number,
 
 #target Illustrator
 
-function container()
+function container ()
 {
 	var valid = true;
 	var scriptName = "build_spirit_prod_files";
 
-	function getUtilities()
+	function getUtilities ()
 	{
-		var result = [];
-		var utilPath = "/Volumes/Customization/Library/Scripts/Script_Resources/Data/";
-		var ext = ".jsxbin"
-
-		//check for dev utilities preference file
-		var devUtilitiesPreferenceFile = File("~/Documents/script_preferences/dev_utilities.txt");
-
-		if (devUtilitiesPreferenceFile.exists)
+		//check for dev mode
+		var devUtilitiesPreferenceFile = File( "~/Documents/script_preferences/dev_utilities.txt" );
+		var devUtilPath = "~/Desktop/automation/utilities/";
+		var devUtils = [ devUtilPath + "Utilities_Container.js", devUtilPath + "Batch_Framework.js" ];
+		function readDevPref ( dp ) { dp.open( "r" ); var contents = dp.read() || ""; dp.close(); return contents; }
+		if ( readDevPref( devUtilitiesPreferenceFile ).match( /true/i ) )
 		{
-			devUtilitiesPreferenceFile.open("r");
-			var prefContents = devUtilitiesPreferenceFile.read();
-			devUtilitiesPreferenceFile.close();
-			if (prefContents === "true")
+			$.writeln( "///////\n////////\nUsing dev utilities\n///////\n////////" );
+			return devUtils;
+		}
+
+
+
+
+
+
+		var utilNames = [ "Utilities_Container" ];
+
+		//not dev mode, use network utilities
+		var OS = $.os.match( "Windows" ) ? "pc" : "mac";
+		var ad4 = ( OS == "pc" ? "//AD4/" : "/Volumes/" ) + "Customization/";
+		var drsv = ( OS == "pc" ? "O:/" : "/Volumes/CustomizationDR/" );
+		var ad4UtilsPath = ad4 + "Library/Scripts/Script_Resources/Data/";
+		var drsvUtilsPath = drsv + "Library/Scripts/Script_Resources/Data/";
+
+
+		var result = [];
+		for ( var u = 0, util; u < utilNames.length; u++ )
+		{
+			util = utilNames[ u ];
+			var ad4UtilPath = ad4UtilsPath + util + ".jsxbin";
+			var ad4UtilFile = File( ad4UtilsPath );
+			var drsvUtilPath = drsvUtilsPath + util + ".jsxbin"
+			var drsvUtilFile = File( drsvUtilPath );
+			if ( drsvUtilFile.exists )
 			{
-				utilPath = "~/Desktop/automation/utilities/";
-				ext = ".js";
+				result.push( drsvUtilPath );
+			}
+			else if ( ad4UtilFile.exists )
+			{
+				result.push( ad4UtilPath );
+			}
+			else
+			{
+				alert( "Could not find " + util + ".jsxbin\nPlease ensure you're connected to the appropriate Customization drive." );
+				valid = false;
 			}
 		}
 
-		if ($.os.match("Windows"))
-		{
-			utilPath = utilPath.replace("/Volumes/", "//AD4/");
-		}
-
-		result.push(utilPath + "Utilities_Container" + ext);
-		result.push(utilPath + "Batch_Framework" + ext);
-
-		if (!result.length)
-		{
-			valid = false;
-			alert("Failed to find the utilities.");
-		}
 		return result;
 
 	}
 
+
+
 	var utilities = getUtilities();
-	for (var u = 0, len = utilities.length; u < len; u++)
+
+
+
+
+	for ( var u = 0, len = utilities.length; u < len && valid; u++ )
 	{
-		eval("#include \"" + utilities[u] + "\"");
+		eval( "#include \"" + utilities[ u ] + "\"" );
 	}
 
-	if (!valid) return;
+	log.l( "Using Utilities: " + utilities );
 
-	if (user === "will.dowling")
+
+	if ( !valid ) return;
+
+	if ( user === "will.dowling" )
 	{
 		DEV_LOGGING = true;
 	}
 
-	logDest.push(getLogDest());
+	logDest.push( getLogDest() );
+
+	var scriptTimer = new Stopwatch();
+	scriptTimer.logStart();
 
 
 
@@ -88,25 +117,26 @@ function container()
 
 
 	//first get the build prod file components
+	scriptTimer.beginTask( "getComponents" );
 
 	var buildProdCompPath = componentsPath + "build_prod_file_beta";
 	var buildProdCompDevPath = desktopPath + "automation/build_prod_file/components";
-	var buildProdCompFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? buildProdCompDevPath : buildProdCompPath)
+	var buildProdCompFiles = getComponents( $.fileName.indexOf( "Dev.jsx" ) > -1 ? buildProdCompDevPath : buildProdCompPath )
 	// var buildProdCompFiles = getComponents(buildProdCompDevPath);
 
-	if(!buildProdCompFiles || !buildProdCompFiles.length)
+	if ( !buildProdCompFiles || !buildProdCompFiles.length )
 	{
-		errorList.push("Failed to find the necessary components.");
-		log.e("No components were found.");
+		errorList.push( "Failed to find the necessary components." );
+		log.e( "No components were found." );
 		valid = false;
 		return valid;
 	}
 
-	for (var cf = 0, len = buildProdCompFiles.length; cf < len; cf++)
+	for ( var cf = 0, len = buildProdCompFiles.length; cf < len; cf++ )
 	{
-		curComponent = buildProdCompFiles[cf].fullName;
-		eval("#include \"" + curComponent + "\"");
-		log.l("included: " + buildProdCompFiles[cf].name);
+		curComponent = buildProdCompFiles[ cf ].fullName;
+		eval( "#include \"" + curComponent + "\"" );
+		log.l( "included: " + buildProdCompFiles[ cf ].name );
 	}
 
 
@@ -116,26 +146,27 @@ function container()
 	var devComponents = desktopPath + "/automation/build_spirit/components";
 	var prodComponents = componentsPath + "/build_spirit";
 
-	var compFiles = getComponents($.fileName.indexOf("Dev.jsx") > -1 ? devComponents : prodComponents);
+	var compFiles = getComponents( $.fileName.indexOf( "Dev.jsx" ) > -1 ? devComponents : prodComponents );
 
-	if (compFiles && compFiles.length)
+	if ( compFiles && compFiles.length )
 	{
 		var curComponent;
-		for (var cf = 0, len = compFiles.length; cf < len; cf++)
+		for ( var cf = 0, len = compFiles.length; cf < len; cf++ )
 		{
-			curComponent = compFiles[cf].fullName;
-			eval("#include \"" + curComponent + "\"");
-			log.l("included: " + compFiles[cf].name);
+			curComponent = compFiles[ cf ].fullName;
+			eval( "#include \"" + curComponent + "\"" );
+			log.l( "included: " + compFiles[ cf ].name );
 		}
 	}
 	else
 	{
-		errorList.push("Failed to find the necessary components.");
-		log.e("No components were found.");
+		errorList.push( "Failed to find the necessary components." );
+		log.e( "No components were found." );
 		valid = false;
 		return valid;
 	}
 
+	scriptTimer.endTask( "getComponents" );
 
 
 	//=============================  /Components  ===============================//
@@ -170,62 +201,62 @@ function container()
 
 	var curGarment;
 	var garCode;
-	
 
-	
+
+
 	var prodDoc;
 	var prodFile;
 
 
 
-	if(valid)
+	if ( valid )
 	{
 		var programId = getProgramId();
 	}
 
-	if(valid)
+	if ( valid )
 	{
 		jobFolderPath = getJobFolderPath();
 	}
-	if(valid)
+	if ( valid )
 	{
 		prepressFolderPath = jobFolderPath + "Prepress_" + programId + "/";
 
-		if(!Folder(prepressFolderPath).exists)
+		if ( !Folder( prepressFolderPath ).exists )
 		{
-			errorList.push("No Prepress folder found.");
+			errorList.push( "No Prepress folder found." );
 			valid = false;
 		}
 	}
 
-	if(valid)
+	if ( valid )
 	{
-		orderData = getSpiritData(programId);
-		writeReadMe(Folder("~/Desktop/temp/"),JSON.stringify(orderData));
-	}
-	
-	if(valid)
-	{
-		garmentsNeeded = parseSpiritData(orderData);
+		orderData = getSpiritData( programId );
+		// writeReadMe( Folder( "~/Desktop/temp/" ), JSON.stringify( orderData ) );
 	}
 
-	if(valid)
+	if ( valid )
 	{
-		masterLoop(garmentsNeeded);
+		garmentsNeeded = parseSpiritData( orderData );
+	}
+
+	if ( valid )
+	{
+		masterLoop( garmentsNeeded );
 	}
 
 
 	//=================================  /Procedure  =================================//
 	/*****************************************************************************/
 
-	if (errorList.length)
+	if ( errorList.length )
 	{
-		sendErrors(errorList);
+		sendErrors( errorList );
 	}
 
-	if (messageList.length)
+	if ( messageList.length )
 	{
-		sendScriptMessages(messageList);
+		sendScriptMessages( messageList );
 	}
 
 	printLog();

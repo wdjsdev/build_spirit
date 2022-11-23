@@ -17,63 +17,89 @@ Description: query netsuite for JSON data for a given order number,
 
 #target Illustrator
 
-function container()
+function container ()
 {
 	var valid = true;
 	var scriptName = "build_spirit_offering";
 
-	function getUtilities()
+	function getUtilities ()
 	{
-		var result = [];
-		var utilPath = "/Volumes/Customization/Library/Scripts/Script_Resources/Data/";
-		var ext = ".jsxbin"
-
-		//check for dev utilities preference file
-		var devUtilitiesPreferenceFile = File("~/Documents/script_preferences/dev_utilities.txt");
-
-		if (devUtilitiesPreferenceFile.exists)
+		//check for dev mode
+		var devUtilitiesPreferenceFile = File( "~/Documents/script_preferences/dev_utilities.txt" );
+		var devUtilPath = "~/Desktop/automation/utilities/";
+		var devUtils = [ devUtilPath + "Utilities_Container.js", devUtilPath + "Batch_Framework.js" ];
+		function readDevPref ( dp ) { dp.open( "r" ); var contents = dp.read() || ""; dp.close(); return contents; }
+		if ( readDevPref( devUtilitiesPreferenceFile ).match( /true/i ) )
 		{
-			devUtilitiesPreferenceFile.open("r");
-			var prefContents = devUtilitiesPreferenceFile.read();
-			devUtilitiesPreferenceFile.close();
-			if (prefContents.match(/true/i))
+			$.writeln( "///////\n////////\nUsing dev utilities\n///////\n////////" );
+			return devUtils;
+		}
+
+
+
+
+
+
+		var utilNames = [ "Utilities_Container" ];
+
+		//not dev mode, use network utilities
+		var OS = $.os.match( "Windows" ) ? "pc" : "mac";
+		var ad4 = ( OS == "pc" ? "//AD4/" : "/Volumes/" ) + "Customization/";
+		var drsv = ( OS == "pc" ? "O:/" : "/Volumes/CustomizationDR/" );
+		var ad4UtilsPath = ad4 + "Library/Scripts/Script_Resources/Data/";
+		var drsvUtilsPath = drsv + "Library/Scripts/Script_Resources/Data/";
+
+
+		var result = [];
+		for ( var u = 0, util; u < utilNames.length; u++ )
+		{
+			util = utilNames[ u ];
+			var ad4UtilPath = ad4UtilsPath + util + ".jsxbin";
+			var ad4UtilFile = File( ad4UtilsPath );
+			var drsvUtilPath = drsvUtilsPath + util + ".jsxbin"
+			var drsvUtilFile = File( drsvUtilPath );
+			if ( drsvUtilFile.exists )
 			{
-				utilPath = "~/Desktop/automation/utilities/";
-				ext = ".js";
+				result.push( drsvUtilPath );
+			}
+			else if ( ad4UtilFile.exists )
+			{
+				result.push( ad4UtilPath );
+			}
+			else
+			{
+				alert( "Could not find " + util + ".jsxbin\nPlease ensure you're connected to the appropriate Customization drive." );
+				alert( "Using util path: " + drsvUtilsPath )
+				valid = false;
 			}
 		}
 
-		if ($.os.match("Windows"))
-		{
-			utilPath = utilPath.replace("/Volumes/", "//AD4/");
-		}
-
-		result.push(utilPath + "Utilities_Container" + ext);
-		result.push(utilPath + "Batch_Framework" + ext);
-
-		if (!result.length)
-		{
-			valid = false;
-			alert("Failed to find the utilities.");
-		}
 		return result;
 
 	}
 
+
+
 	var utilities = getUtilities();
-	for (var u = 0, len = utilities.length; u < len; u++)
+
+
+
+
+	for ( var u = 0, len = utilities.length; u < len && valid; u++ )
 	{
-		eval("#include \"" + utilities[u] + "\"");
+		eval( "#include \"" + utilities[ u ] + "\"" );
 	}
 
-	if (!valid) return;
 
-	if (user === "will.dowling")
+	if ( !valid ) return;
+
+
+	if ( user === "will.dowling" )
 	{
 		DEV_LOGGING = true;
 	}
 
-	logDest.push(getLogDest());
+	logDest.push( getLogDest() );
 
 
 
@@ -93,33 +119,21 @@ function container()
 	var devComponents = desktopPath + "/automation/build_spirit/components";
 	var prodComponents = componentsPath + "/build_spirit";
 
-	var compFiles;
-	if($.fileName.indexOf("Dev.jsx") > -1)
+	var compFiles = getComponents( $.fileName.match( /dev/i ) ? devComponents : prodComponents );
+	if ( !compFiles || !compFiles.length )
 	{
-		compFiles = includeComponents(devComponents, devComponents, true);
-	}
-	else
-	{
-		compFiles = includeComponents(prodComponents, prodComponents, true);
-	}
-
-	// var compFiles = includeComponents(devComponents, prodComponents, false);
-	if (compFiles && compFiles.length)
-	{
-		var curComponent;
-		for (var cf = 0, len = compFiles.length; cf < len; cf++)
-		{
-			curComponent = compFiles[cf].fullName;
-			eval("#include \"" + curComponent + "\"");
-			log.l("included: " + compFiles[cf].name);
-		}
-	}
-	else
-	{
-		errorList.push("Failed to find the necessary components.");
-		log.e("No components were found.");
+		errorList.push( "Failed to find the necessary components." );
+		log.e( "No components were found." );
 		valid = false;
 		return valid;
+	}
+
+	var curComponent;
+	for ( var cf = 0, len = compFiles.length; cf < len; cf++ )
+	{
+		curComponent = compFiles[ cf ].fullName;
+		eval( "#include \"" + curComponent + "\"" );
+		log.l( "included: " + compFiles[ cf ].name );
 	}
 
 
@@ -133,63 +147,40 @@ function container()
 	/*****************************************************************************/
 	//=================================  Procedure  =================================//
 
-
-	// if(!app.documents.length)
-	// {
-	// 	alert("Please open the Master File First.");
-	// 	valid = false;
-	// 	return valid;
-	// }
-
+	app.userInteractionLevel = UserInteractionLevel.DISPLAYALERTS;
 
 	var filesToClose = []; //these are the youth files that are not needed after merging with adult
 
-	if(valid)
+	if ( valid )
 	{
-		var programId = getProgramId();	
+		var programId = getProgramId();
 	}
-	
 
-	// if (valid)
-	// {
-	// 	var data = getSpiritData();
-	// 	if (!data) valid = false;
-	// }
 
-	if (valid)
+	if ( valid )
 	{
 
-		if(documents.length && app.activeDocument.name.match(programId))
+		if ( documents.length && app.activeDocument.name.match( programId ) )
 		{
 			var masterFile = app.activeDocument;
 		}
 		else
 		{
-			var masterFile = openMaster(programId);
+			var masterFile = openMaster( programId );
 		}
-		
+
 	}
 
-	// if (valid)
-	// {
-	// 	var garmentsNeeded = parseSpiritData(data);
-	// 	if (!garmentsNeeded) valid = false;
-	// }
-
-	// if (valid && garmentsNeeded)
-	// {
-	// 	buildOffering(garmentsNeeded);
-	// }
-
-	if (valid) {
+	if ( valid )
+	{
 		buildOffering();
 	}
 
-	if(valid && filesToClose.length)
+	if ( valid && filesToClose.length )
 	{
-		for(var x= filesToClose.length-1;x>=0;x--)
+		for ( var x = filesToClose.length - 1; x >= 0; x-- )
 		{
-			filesToClose[x].close(SaveOptions.DONOTSAVECHANGES);
+			filesToClose[ x ].close( SaveOptions.DONOTSAVECHANGES );
 		}
 	}
 
@@ -197,14 +188,14 @@ function container()
 	//=================================  /Procedure  =================================//
 	/*****************************************************************************/
 
-	if (errorList.length)
+	if ( errorList.length )
 	{
-		sendErrors(errorList);
+		sendErrors( errorList );
 	}
 
-	if (messageList.length)
+	if ( messageList.length )
 	{
-		sendScriptMessages(messageList);
+		sendScriptMessages( messageList );
 	}
 
 	printLog();
