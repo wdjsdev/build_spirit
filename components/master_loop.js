@@ -2,30 +2,36 @@ function masterLoop ( garmentsNeeded )
 {
 
 	var curGarment;
-	var garments = [];
 
+	//get an array of the garment "labels"
+	//example label is "FD-161_1003_W" or "FD-1873W_1032_W_B"
+	var garmentLabels = garmentsNeeded.map(function( gar ) { return gar.label; } );
+	garmentLabels = chooseGarmentsToProcess( garmentLabels );
 
-	for ( var gar in garmentsNeeded )
+	garmentsNeeded.forEach( function ( gar )
 	{
-		curGarment = garmentsNeeded[ gar ];
-		curGarment.garCode = curGarment.mid.replace( /[yg]/ig, "" ) + "_" + curGarment.styleNum;
-		garments.push( curGarment );
-	}
+		if ( garmentLabels.indexOf( gar.label ) === -1 )
+		{
+			return;
+		}
 
-	garments = chooseGarmentsToProcess( garments );
-
-	garments.forEach( function ( gar )
-	{
 		curGarment = gar;
-		prepressFile = findPrepressFile( curGarment.garCode );
 
-
+		//find the prepress file
+		// if this is a uniform shop
+		// use the refDesignNumber to find the prepress file
+		// else this is a spirit shop
+		// use the label to find the prepress file
+		var prepressFileSearchTerm = curGarment.refDesignNumber || curGarment.label;
+		prepressFile = findPrepressFile(prepressFileSearchTerm)
+		
 		//if there's no prepress file for this.. send an
 		//log an error and move on
 		if ( !prepressFile || !prepressFile.exists )
 		{
-			log.e( "Failed to find a prepress for: " + curGarment.garCode + ".ai" );
+			log.e( "Failed to find a prepress for: " + curGarment.garCode + ".ai::prepressFileSearchTerm = " + prepressFileSearchTerm );
 			errorList.push( "Failed to find a prepress for: " + curGarment.garCode + ".ai" );
+
 			return;
 		}
 
@@ -36,89 +42,31 @@ function masterLoop ( garmentsNeeded )
 		if ( !prodFolder.exists ) prodFolder.create();
 
 
-
 		//create the prod file
-		prodFile = File( prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai" );
+		prodFile = File( prodFolderPath + programId + "_" + curGarment.label + "_prod.ai" );
 		prodDoc = app.documents.add();
 		prodDoc.layers[ 0 ].name = "Artwork";
 		prodDoc.saveAs( prodFile );
 
+
 		//open the prepress
 		prepressDoc = app.open( prepressFile );
 
+
+		// import the art
 		duplicateArtToProdFile( curGarment );
-
 		prodDoc.activate();
-		inputRosterData( curGarment.roster );
 
+
+		// input roster data
+		inputRosterData( curGarment );
+
+
+		// fix colors and open the adjustment dialog
 		colorFixer();
 		initAdjustProdFile();
-		// prodFileSaveLocation = pdfsPath;
-		// getSaveLocation();
-		log.l( "prodFileSaveLocation = " + prodFileSaveLocation );
 		createAdjustmentDialog();
 		prepressDoc.close( SaveOptions.DONOTSAVECHANGES );
 	} );
-
-
-
-	// for(var ml=0,len=garments.length;ml<len;ml++)
-	// {
-	// 	curGarment = garments[ml];
-	// 	// curGarment.garCode = garCode = curGarment.mid.replace(/[yg]/ig,"") + "_" + curGarment.styleNum;
-
-
-	// 	// prepressFile = File(prepressFolderPath + garCode + ".ai");
-	// 	prepressFile = findPrepressFile(curGarment.garCode);
-
-
-	// 	//if there's no prepress file for this.. send an
-	// 	//log an error and move on
-	// 	if(!prepressFile || !prepressFile.exists)
-	// 	{
-	// 		log.e("Failed to find a prepress for: " + curGarment.garCode + ".ai");
-	// 		errorList.push("Failed to find a prepress for: " + curGarment.garCode + ".ai");
-	// 		continue;	
-	// 	}
-
-
-	// 	prodFolderPath = jobFolderPath + programId + "_IHFD/";
-	// 	prodFolder = Folder(prodFolderPath);
-	// 	if(!prodFolder.exists)prodFolder.create();
-
-
-	// 	//setup pdfs folder for exported items
-	// 	// pdfsPath = prodFolderPath + programId + "_" + garCode + "_PDFs";
-	// 	// pdfsFolder = Folder(pdfsPath);
-	// 	// if(!pdfsFolder.exists)pdfsFolder.create();
-
-
-
-	// 	//create the prod file
-	// 	prodFile = File(prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai");
-	// 	prodDoc = app.documents.add();
-	// 	prodDoc.layers[0].name = "Artwork";
-	// 	prodDoc.saveAs(prodFile);
-
-	// 	//open the prepress
-	// 	prepressDoc = app.open(prepressFile);
-
-	// 	duplicateArtToProdFile(curGarment);
-
-	// 	prodDoc.activate();
-	// 	inputRosterData(curGarment.roster);
-
-	// 	colorFixer();
-	// 	initAdjustProdFile();
-	// 	// prodFileSaveLocation = pdfsPath;
-	// 	// getSaveLocation();
-	// 	log.l("prodFileSaveLocation = " + prodFileSaveLocation);
-	// 	createAdjustmentDialog();
-	// 	prepressDoc.close(SaveOptions.DONOTSAVECHANGES);
-
-	// }	
-
-
-
 
 }

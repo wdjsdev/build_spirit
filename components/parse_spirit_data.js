@@ -1,65 +1,70 @@
 function parseSpiritData ( data )
 {
+	var garmentsInData = [];
 
-
-	var garmentsNeeded = {};
-
-	var curGarGroup, curGar;
-	var curSize, curStyleNum, curPlayer;
-	var curGN, curMid;
-	var playerLen = 0;
-	for ( var gar in data ) 
+	for(var fullLabel in data)
 	{
-		//sample gar value = "FD-1873_FD-1873-FD-1873Y-1027"
-		$.writeln( "gar = " + gar );
-		curStyleNum = gar.substring( gar.lastIndexOf( "-" ) + 1, gar.length );
-		curStyleNum = curStyleNum.replace( /[\s-_].*/ig, "" );
-		curGarGroup = data[ gar ];
-		curGN = null;
-
-
-		//curGarGroup is the array of objects for the current garment
-		//each object represents a garment and includes the size and roster info
-		for ( var x = 0; x < curGarGroup.length; x++ )
-		{
-			curGar = curGarGroup[ x ];
-			curMid = curGar.mid || getMidFromLabel( gar );
-			if ( !curGN )
-			{
-				curGN = garmentsNeeded[ curMid + "_" + curStyleNum ] = {};
-				curGN.mid = curMid;
-				curGN.roster = {};
-			}
-
-			curGN.styleNum = curStyleNum;
-
-			curSize = curGar.itemtext.substring( curGar.itemtext.lastIndexOf( "-" ) + 1, curGar.itemtext.length );
-
-			if ( !curGN.roster[ curSize ] )
-			{
-				curGN.roster[ curSize ] = { "players": [] };
-			}
-
-			curPlayer = { name: "", number: "" };
-
-
-
-			if ( curGar.playername )
-			{
-				curPlayer.name = curGar.playername;
-			}
-
-			if ( curGar.playernumber )
-			{
-				curPlayer.number = curGar.playernumber;
-			}
-
-			curGN.roster[ curSize ].players.push( curPlayer );
-
-			curGN.roster[ curSize ].qty = x + 1;
-		}
-		playerLen = 0;
+		garmentsInData.push(parseGarment(data[fullLabel],fullLabel));
 	}
 
-	return garmentsNeeded;
+	function parseGarment( garmentsArray,label )
+	{
+		var mid = label.replace(/_.*/i,"").replace(/\s/g,"");
+
+		var styleNum = label.replace(/_/g,"-").split("-");
+		styleNum = styleNum[styleNum.length-1].replace(/\s.*/i,"");
+
+		if(!styleNum)
+		{
+			errorList.push("No style number found for " + label);
+			log.e("No style number found for " + label);
+			return;
+		}
+
+		var garmentColor = "";
+		if(label.match(/\s/))
+		{
+			garmentColor = "_" + trimSpaces(label.match(/\s.*$/g)[0]).replace(/\s/g,"_");
+		}
+		
+		var label = mid + "_" + styleNum + garmentColor;
+		var garmentRoster = {};
+		var refOrderNumber = refDesignNumber = "";
+		var refOrder = garmentsArray[0].reforder;
+		if(refOrder && !refOrder.match(/^([a-z0-9]{3}-){3}[a-z0-9]{3}$/i))
+		{
+			var split = garmentsArray[0].reforder.split("_");
+			refOrderNumber = split[0];
+			refDesignNumber = split[1];
+		}
+		
+		garmentsArray.forEach(function(subGarment)
+		{
+			var curSize = subGarment.itemtext.replace(/^.*-/g,"");
+			if(!garmentRoster[curSize])
+			{
+				garmentRoster[curSize] = {"players":[]};
+				garmentRoster[curSize].qty = 0;
+			}
+			var curName = subGarment.playername || "";
+			var curNumber = subGarment.playernumber || "";
+			garmentRoster[curSize].players.push({"name":curName,"number":curNumber});
+			garmentRoster[curSize].qty++;
+		});
+
+		var garmentObject = {
+			"mid": trimSpaces(mid),
+			"styleNum": trimSpaces(styleNum),
+			"color": trimSpaces(garmentColor),
+			"roster": garmentRoster,
+			"garCode": mid + "_" + styleNum,
+			"label": label,
+			"refOrderNumber": refOrderNumber,
+			"refDesignNumber": refDesignNumber
+		};
+
+		return garmentObject;
+	}
+
+	return garmentsInData;
 }

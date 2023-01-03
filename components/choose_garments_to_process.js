@@ -1,10 +1,8 @@
-function chooseGarmentsToProcess ( garments )
+function chooseGarmentsToProcess ( garmentCodes )
 {
 	var result = [];
-	// var garNames = garments.map( function ( g ) { return g.garCode } );
 
-	// var chosenGarments = chooseFromListbox( garNames, "which garments" );
-	var chosenGarments = chooseFromListbox( garments, "which garments" );
+	var chosenGarments = chooseFromListbox( garmentCodes, "which garments" );
 
 
 	if ( chosenGarments && chosenGarments.length )

@@ -77,7 +77,7 @@ function buildOffering ( gn )
 			} )
 		}
 	}
-	else if ( !artLayer.pageItems.length )
+	else if ( artLayer && !artLayer.pageItems.length )
 	{
 		errorList.push( "No artwork on the artwork layer... Can't import any logos/names/numbers to the master files." );
 	}
@@ -102,22 +102,22 @@ function buildOffering ( gn )
 
 	eval( "#include \"" + ctlPath + "\"" );
 
-	var garments = [];
+	var garmentCodes = [];
 
 	arrayFromContainer( paramLayer, "groupItems" ).forEach( function ( curGroup )
 	{
-		garments.push( curGroup.name );
+		garmentCodes.push( curGroup.name );
 	} )
 
 
-	garments = chooseGarmentsToProcess( garments );
+	garmentCodes = chooseGarmentsToProcess( garmentCodes );
 
 	// app.userInteractionLevel = UserInteractionLevel.DONTDISPLAYALERTS;
 
 
 	//load the cleanup swatches action
 	createAction( "cleanup_swatches", CLEANUP_SWATCHES_ACTION_STRING );
-	garments.forEach( function ( curGarCode )
+	garmentCodes.forEach( function ( curGarCode )
 	{
 		log.l( "cur garment code = " + curGarCode );
 		var curPrepress, cppab, cppabLen, paramGroup;
@@ -169,7 +169,7 @@ function buildOffering ( gn )
 			}
 
 			curPrepress.selection = null;
-			curPrepress.saveAs( File( prepressPath + curGarCode + ".ai" ) );
+			curPrepress.saveAs( File( prepressPath + curGarCode + "_prepress" + ".ai" ) );
 
 		}
 		else
