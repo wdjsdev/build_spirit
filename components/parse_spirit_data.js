@@ -7,9 +7,31 @@ function parseSpiritData ( data )
 		garmentsInData.push(parseGarment(data[fullLabel],fullLabel));
 	}
 
+
+	return garmentsInData;
+
+
+
 	function parseGarment( garmentsArray,label )
 	{
+		
 		var mid = label.replace(/_.*/i,"").replace(/\s/g,"");
+		//check for wonky label with multiple garment codes for some stupid reason
+		//sometimes the label will be "FD-692_FD-872-FD-872Y-1013" or something stupid
+		//and the mid will be FD-692... which is wrong... 
+		// so for anything that starts with FD-161 or FD-692, we need to check for a second FD- in the label
+		// and use that instead
+		var sillyLabelRegex = /^FD-(163|161|692|872|1873|1874)[ywg]?_/i;
+		if(label.match(sillyLabelRegex) && garmentsArray[0].style.match(/^FD-[0-9]{3,5}/i))
+		{
+			var secondMid = garmentsArray[0].style.match(/^FD-[0-9]{3,5}[a-z]?/i)[0] || null;
+			if(mid !== secondMid)
+			{
+				log.l("updating mid to " + secondMid + " from " + mid + " for label: " + label);
+			}
+			mid = secondMid || mid;
+		}
+		log.l("Using mid: " + mid + " for label: " + label);
 
 		var styleNum = label.replace(/_/g,"-").split("-");
 		styleNum = styleNum[styleNum.length-1].replace(/\s.*/i,"");
@@ -66,5 +88,5 @@ function parseSpiritData ( data )
 		return garmentObject;
 	}
 
-	return garmentsInData;
+	
 }
