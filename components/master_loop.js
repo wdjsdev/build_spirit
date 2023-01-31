@@ -12,7 +12,9 @@ function masterLoop ( garmentsNeeded )
 		garments.push( curGarment );
 	}
 
-	garments = chooseGarmentsToProcess( garments );
+	var chosenGarmentCodes = chooseGarmentsToProcess( garments.map( function ( g ) { return g.garCode } ) );
+
+	garments = garments.filter( function ( g ) { return chosenGarmentCodes.indexOf( g.garCode ) > -1 } )
 
 	garments.forEach( function ( gar )
 	{
@@ -49,7 +51,7 @@ function masterLoop ( garmentsNeeded )
 		duplicateArtToProdFile( curGarment );
 
 		prodDoc.activate();
-		inputRosterData( curGarment.roster );
+		inputRosterData( curGarment );
 
 		colorFixer();
 		initAdjustProdFile();

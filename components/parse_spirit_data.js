@@ -11,7 +11,7 @@ function parseSpiritData ( data )
 	for ( var gar in data ) 
 	{
 		//sample gar value = "FD-1873_FD-1873-FD-1873Y-1027"
-		$.writeln( "gar = " + gar );
+		log.l( "gar = " + gar );
 		curStyleNum = gar.substring( gar.lastIndexOf( "-" ) + 1, gar.length );
 		curStyleNum = curStyleNum.replace( /[\s-_].*/ig, "" );
 		curGarGroup = data[ gar ];
@@ -28,6 +28,7 @@ function parseSpiritData ( data )
 			{
 				curGN = garmentsNeeded[ curMid + "_" + curStyleNum ] = {};
 				curGN.mid = curMid;
+				curGN.refOrder = curGar.reforder;
 				curGN.roster = {};
 			}
 
