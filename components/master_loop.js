@@ -12,14 +12,17 @@ function masterLoop ( garmentsNeeded )
 		garments.push( curGarment );
 	}
 
-	var chosenGarmentCodes = chooseGarmentsToProcess( garments.map( function ( g ) { return g.garCode } ) );
+	var chosenGarmentCodes = chooseGarmentsToProcess( garments.map( function ( g ) 
+	{
+		return g.garCode + ( g.designNumber ? " - " + g.designNumber : "" )
+	} ) ).map( function ( cgc ) { return cgc.replace( / - .*$/, "" ) } );
 
 	garments = garments.filter( function ( g ) { return chosenGarmentCodes.indexOf( g.garCode ) > -1 } )
 
 	garments.forEach( function ( gar )
 	{
 		curGarment = gar;
-		prepressFile = findPrepressFile( curGarment.garCode );
+		prepressFile = findPrepressFile( curGarment );
 
 
 		//if there's no prepress file for this.. send an

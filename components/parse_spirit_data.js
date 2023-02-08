@@ -4,7 +4,7 @@ function parseSpiritData ( data )
 
 	var garmentsNeeded = {};
 
-	var curGarGroup, curGar;
+	var curGarGroup;
 	var curSize, curStyleNum, curPlayer;
 	var curGN, curMid;
 	var playerLen = 0;
@@ -20,15 +20,16 @@ function parseSpiritData ( data )
 
 		//curGarGroup is the array of objects for the current garment
 		//each object represents a garment and includes the size and roster info
-		for ( var x = 0; x < curGarGroup.length; x++ )
+		curGarGroup.forEach( function ( curGar, x )
 		{
-			curGar = curGarGroup[ x ];
 			curMid = curGar.mid || getMidFromLabel( gar );
 			if ( !curGN )
 			{
 				curGN = garmentsNeeded[ curMid + "_" + curStyleNum ] = {};
 				curGN.mid = curMid;
-				curGN.refOrder = curGar.reforder;
+				var refOrder = curGar.reforder;
+				curGN.designNumber = refOrder.match( /[a-z0-9]{12}/i ) ? refOrder.match( /[a-z0-9]{12}/i )[ 0 ] : null;
+				curGN.orderNumber = refOrder.match( /[0-9]{7}/i ) ? refOrder.match( /[0-9]{7}/i )[ 0 ] : null;
 				curGN.roster = {};
 			}
 
@@ -58,7 +59,7 @@ function parseSpiritData ( data )
 			curGN.roster[ curSize ].players.push( curPlayer );
 
 			curGN.roster[ curSize ].qty = x + 1;
-		}
+		} );
 		playerLen = 0;
 	}
 
