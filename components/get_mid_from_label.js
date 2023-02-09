@@ -41,7 +41,12 @@ function getMidFromLabel ( label )
 		}
 		else
 		{
-			result = garmentCodes[ 1 ] + ( youthFlag ? youthFlag[ 0 ] : "" )
+			result = garmentCodes[ 1 ];
+			if ( youthFlag )
+			{
+				result = result.replace( /w/i, youthFlag[ 0 ] );
+			}
+
 		}
 
 	}
