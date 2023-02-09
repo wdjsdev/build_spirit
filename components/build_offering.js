@@ -23,7 +23,7 @@
 		styleNum: "1007"
 	},*/
 
-function buildOffering ( gn )
+function buildOffering ()
 {
 	var jobFolderPath = desktopPath + "Spirit_Sites/" + programId + "/";
 	var jobFolder = Folder( jobFolderPath );

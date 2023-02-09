@@ -1,31 +1,27 @@
 function masterLoop ( garmentsNeeded )
 {
 
-	var curGarment;
-	var garments = [];
 
-
-	for ( var gar in garmentsNeeded )
+	var listboxGarmentCodes = garmentsNeeded.map( function ( g )
 	{
-		curGarment = garmentsNeeded[ gar ];
-		curGarment.garCode = curGarment.mid.replace( /[yg]/ig, "" ) + "_" + curGarment.styleNum;
-		garments.push( curGarment );
-	}
+		return g.garCode + ( g.designNumber ? " - " + g.designNumber : "" );
+	} );
 
-	var chosenGarmentCodes = chooseGarmentsToProcess( garments.map( function ( g ) 
+	listboxGarmentCodes = getUnique( listboxGarmentCodes );
+
+	var chosenGarmentCodes = chooseGarmentsToProcess( listboxGarmentCodes ).map( function ( cgc ) 
 	{
-		return g.garCode + ( g.designNumber ? " - " + g.designNumber : "" )
-	} ) ).map( function ( cgc ) { return cgc.replace( / - .*$/, "" ) } );
+		return cgc.replace( / - .*$/, "" );
+	} );
 
-	garments = garments.filter( function ( g ) { return chosenGarmentCodes.indexOf( g.garCode ) > -1 } )
+	var garments = garmentsNeeded.filter( function ( g ) { return chosenGarmentCodes.indexOf( g.garCode ) > -1 } )
 
-	garments.forEach( function ( gar )
+	garments.forEach( function ( curGarment )
 	{
-		curGarment = gar;
 		prepressFile = findPrepressFile( curGarment );
 
 
-		//if there's no prepress file for this.. send an
+		//if there's no prepress file for this.. send an Mcx
 		//log an error and move on
 		if ( !prepressFile || !prepressFile.exists )
 		{
@@ -40,88 +36,98 @@ function masterLoop ( garmentsNeeded )
 		prodFolder = Folder( prodFolderPath );
 		if ( !prodFolder.exists ) prodFolder.create();
 
+		if ( curGarment.age === "youth" )
+		{
+			curGarment.garCode = curGarment.mid + ( curGarment.mid.match( /w/i ) ? "G" : "Y" ) + "_" + curGarment.styleNum;
+		}
 
-
-		//create the prod file
-		prodFile = File( prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai" );
-		prodDoc = app.documents.add();
+		var prodFileName = prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai";
+		var prodFile = File( prodFileName );
+		var prodDoc = app.documents.add();
 		prodDoc.layers[ 0 ].name = "Artwork";
 		prodDoc.saveAs( prodFile );
+
+
 
 		//open the prepress
 		prepressDoc = app.open( prepressFile );
 
-		duplicateArtToProdFile( curGarment );
+		var prepressGarmentLayer = findSpecificLayer( prepressDoc.layers, curGarment.garCode, "any" );
+		if ( !prepressGarmentLayer )
+		{
+			log.e( "Failed to find the garment layer for: " + curGarment.garCode );
+			errorList.push( "Failed to find the garment layer for: " + curGarment.garCode );
+			return;
+		}
+
+		var artworkDuplicationGroup = prepressGarmentLayer.groupItems.add();
+
+		var prepressLayer = findSpecificLayer( prepressGarmentLayer.layers, "Prepress", "any" );
+
+		for ( var size in curGarment.roster )
+		{
+			afc( prepressLayer.layers[ size ] ).forEach( function ( pi )
+			{
+				pi.duplicate( artworkDuplicationGroup, ElementPlacement.PLACEATEND )
+			} )
+		}
+
+
+		var prodDocArtGroup = artworkDuplicationGroup.duplicate( prodDoc.layers[ 0 ] );
 
 		prodDoc.activate();
-		inputRosterData( curGarment );
+		afc( prodDocArtGroup, "pageItems" ).forEach( function ( pi )
+		{
+			pi.moveToBeginning( prodDoc.layers[ 0 ] );
+			setupRosterGroup( pi );
+		} );
 
+		artworkDuplicationGroup.remove();
+
+		inputRosterData( curGarment );
 		colorFixer();
 		initAdjustProdFile();
-		// prodFileSaveLocation = pdfsPath;
-		// getSaveLocation();
-		log.l( "prodFileSaveLocation = " + prodFileSaveLocation );
+		loadExpandAction();
 		createAdjustmentDialog();
 		prepressDoc.close( SaveOptions.DONOTSAVECHANGES );
 	} );
 
 
 
-	// for(var ml=0,len=garments.length;ml<len;ml++)
+
+
+
+	// function sendArtToProdFile ( artworkDuplicationGroup, prodFileName )
 	// {
-	// 	curGarment = garments[ml];
-	// 	// curGarment.garCode = garCode = curGarment.mid.replace(/[yg]/ig,"") + "_" + curGarment.styleNum;
-
-
-	// 	// prepressFile = File(prepressFolderPath + garCode + ".ai");
-	// 	prepressFile = findPrepressFile(curGarment.garCode);
-
-
-	// 	//if there's no prepress file for this.. send an
-	// 	//log an error and move on
-	// 	if(!prepressFile || !prepressFile.exists)
-	// 	{
-	// 		log.e("Failed to find a prepress for: " + curGarment.garCode + ".ai");
-	// 		errorList.push("Failed to find a prepress for: " + curGarment.garCode + ".ai");
-	// 		continue;	
-	// 	}
-
-
-	// 	prodFolderPath = jobFolderPath + programId + "_IHFD/";
-	// 	prodFolder = Folder(prodFolderPath);
-	// 	if(!prodFolder.exists)prodFolder.create();
-
-
-	// 	//setup pdfs folder for exported items
-	// 	// pdfsPath = prodFolderPath + programId + "_" + garCode + "_PDFs";
-	// 	// pdfsFolder = Folder(pdfsPath);
-	// 	// if(!pdfsFolder.exists)pdfsFolder.create();
-
-
-
 	// 	//create the prod file
-	// 	prodFile = File(prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai");
-	// 	prodDoc = app.documents.add();
-	// 	prodDoc.layers[0].name = "Artwork";
-	// 	prodDoc.saveAs(prodFile);
+	// 	var prodFile = File( prodFileName );
+	// 	var prodDoc = app.documents.add();
+	// 	prodDoc.layers[ 0 ].name = "Artwork";
+	// 	prodDoc.saveAs( prodFile );
 
-	// 	//open the prepress
-	// 	prepressDoc = app.open(prepressFile);
+	// 	var prodDocArtGroup = artworkDuplicationGroup.duplicate( prodDoc.layers[ 0 ] );
 
-	// 	duplicateArtToProdFile(curGarment);
+	// 	afc( prodDocArtGroup, "pageItems" ).forEach( function ( pi )
+	// 	{
+	// 		pi.moveToBeginning( prodDoc.layers[ 0 ] );
+	// 		setupRosterGroup( pi );
+	// 	} );
+
+	// 	artworkDuplicationGroup.remove();
+
+	// 	// duplicateArtToProdFile( curGarment );
 
 	// 	prodDoc.activate();
-	// 	inputRosterData(curGarment.roster);
+	// 	inputRosterData( curGarment );
 
 	// 	colorFixer();
 	// 	initAdjustProdFile();
-	// 	// prodFileSaveLocation = pdfsPath;
-	// 	// getSaveLocation();
-	// 	log.l("prodFileSaveLocation = " + prodFileSaveLocation);
+	// 	log.l( "prodFileSaveLocation = " + prodFileSaveLocation );
+	// 	loadExpandAction();
 	// 	createAdjustmentDialog();
-	// 	prepressDoc.close(SaveOptions.DONOTSAVECHANGES);
+	// }
 
-	// }	
+
 
 
 

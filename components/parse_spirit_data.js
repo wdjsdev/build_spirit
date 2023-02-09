@@ -2,11 +2,11 @@ function parseSpiritData ( data )
 {
 
 
-	var garmentsNeeded = {};
+	var garmentsNeeded = [];
 
 	var curGarGroup;
 	var curSize, curStyleNum, curPlayer;
-	var curGN, curMid;
+	var curGN, curMid, curAge;
 	var playerLen = 0;
 	for ( var gar in data ) 
 	{
@@ -16,45 +16,46 @@ function parseSpiritData ( data )
 		curStyleNum = curStyleNum.replace( /[\s-_].*/ig, "" );
 		curGarGroup = data[ gar ];
 		curGN = null;
+		curMid = getMidFromLabel( gar );
+		curAge = gar.split( '_' )[ 0 ].match( /yg/i ) ? 'youth' : 'adult';
 
 
 		//curGarGroup is the array of objects for the current garment
 		//each object represents a garment and includes the size and roster info
 		curGarGroup.forEach( function ( curGar, x )
 		{
-			curMid = curGar.mid || getMidFromLabel( gar );
 			if ( !curGN )
 			{
-				curGN = garmentsNeeded[ curMid + "_" + curStyleNum ] = {};
-				curGN.mid = curMid;
 				var refOrder = curGar.reforder;
-				curGN.designNumber = refOrder.match( /[a-z0-9]{12}/i ) ? refOrder.match( /[a-z0-9]{12}/i )[ 0 ] : null;
-				curGN.orderNumber = refOrder.match( /[0-9]{7}/i ) ? refOrder.match( /[0-9]{7}/i )[ 0 ] : null;
-				curGN.roster = {};
+				curGN = {
+					"groupName": gar,
+					"mid": curMid,
+					"designNumber": refOrder.match( /[a-z0-9]{12}/i ) ? refOrder.match( /[a-z0-9]{12}/i )[ 0 ] : null,
+					"orderNumber": refOrder.match( /[0-9]{7}/i ) ? refOrder.match( /[0-9]{7}/i )[ 0 ] : null,
+					"roster": {},
+					"styleNum": curStyleNum,
+					"garCode": curMid + "_" + curStyleNum,
+					"age": curAge
+				};
+				garmentsNeeded.push( curGN );
 			}
 
-			curGN.styleNum = curStyleNum;
-
 			curSize = curGar.itemtext.substring( curGar.itemtext.lastIndexOf( "-" ) + 1, curGar.itemtext.length );
+			if ( curSize.match( /y/i ) )
+			{
+				curGN.age = "youth";
+			}
 
 			if ( !curGN.roster[ curSize ] )
 			{
 				curGN.roster[ curSize ] = { "players": [] };
 			}
 
-			curPlayer = { name: "", number: "" };
+			curPlayer = {
+				name: curGar.playername || "",
+				number: curGar.playernumber || ""
+			};
 
-
-
-			if ( curGar.playername )
-			{
-				curPlayer.name = curGar.playername;
-			}
-
-			if ( curGar.playernumber )
-			{
-				curPlayer.number = curGar.playernumber;
-			}
 
 			curGN.roster[ curSize ].players.push( curPlayer );
 
