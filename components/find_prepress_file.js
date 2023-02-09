@@ -15,9 +15,10 @@ function findPrepressFile ( garment )
 		if ( f.name.match( searchTerm ) )
 		{
 			result = f;
+			log.l( "prepress file: " + result.name + " for " + garment.garCode + " found." )
 		}
 	} );
 
-	log.l( "prepress file: " + result.name + " for " + garment.garCode + " found." )
+
 	return result;
 }

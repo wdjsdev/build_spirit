@@ -59,7 +59,7 @@ function parseSpiritData ( data )
 
 			curGN.roster[ curSize ].players.push( curPlayer );
 
-			curGN.roster[ curSize ].qty = x + 1;
+			curGN.roster[ curSize ].qty = curGN.roster[ curSize ].players.length;
 		} );
 		playerLen = 0;
 	}

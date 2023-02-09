@@ -30,17 +30,35 @@ function getMidFromLabel ( label )
 	var firstCode = label.substring( 0, label.indexOf( "_" ) );
 	var secondCode = label.substring( label.indexOf( "_" ) + 1, label.length );
 
+	var garmentCodes = label.match( /[fdpsbm]{2,3}-[0-9]{3,5}[wyg]?/ig );
 
-
-
-	if ( !secondCode.match( firstCode ) || firstCode.match( /[yg]/i ) )
+	if ( garmentCodes.length === 3 )
 	{
-		result = secondCode.substring( 0, nthIndex( secondCode, "-", 2 ) );
+		var youthFlag = garmentCodes[ 0 ].match( /[yg]/i );
+		if ( garmentCodes[ 0 ].replace( /[yg]$/i ) === garmentCodes[ 1 ] )
+		{
+			result = garmentCodes[ 0 ];
+		}
+		else
+		{
+			result = garmentCodes[ 1 ] + ( youthFlag ? youthFlag[ 0 ] : "" )
+		}
+
 	}
 	else
 	{
-		result = firstCode;
+		result = garmentCodes[ 0 ];
 	}
+
+
+	// if ( !secondCode.match( firstCode ) || firstCode.match( /[yg]/i ) )
+	// {
+	// 	result = secondCode.substring( 0, nthIndex( secondCode, "-", 2 ) );
+	// }
+	// else
+	// {
+	// 	result = firstCode;
+	// }
 	return result;
 }
 
