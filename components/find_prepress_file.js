@@ -1,24 +1,39 @@
 function findPrepressFile ( garment )
 {
 	var result;
-	var files = Folder( prepressFolderPath ).getFiles();
+	var files = Folder( prepressFolderPath ).getFiles().filter( function ( f ) { return f.name.match( /prepress.*\.ai[t]?$/i ) } );
 	var fName;
 	var code = garment.garCode.replace( /[-_]/g, "" );
 
+
 	var searchTerm = new RegExp( ( garment.designNumber || garment.orderNumber || code ), "i" );
-	files.forEach( function ( f )
+
+
+	findInFiles( files, searchTerm );
+	if ( !result )
 	{
-		if ( result || !f.name.match( /prepress.*\.ai[t]?$/i ) )
-		{
-			return;
-		}
-		if ( f.name.replace( /[-_]/g, "" ).match( searchTerm ) )
-		{
-			result = f;
-			log.l( "prepress file: " + result.name + " for " + garment.garCode + " found." )
-		}
-	} );
+		findInFiles( files, code.replace( /[yg]/i, "" ) );
+	}
+
 
 
 	return result;
+
+
+
+	function findInFiles ( files, searchTerm )
+	{
+		files.forEach( function ( f )
+		{
+			if ( result ) 
+			{
+				return;
+			}
+			if ( f.name.replace( /[-_]/g, "" ).match( searchTerm ) )
+			{
+				result = f;
+				log.l( "prepress file: " + result.name + " for " + garment.garCode + " found." )
+			}
+		} );
+	}
 }

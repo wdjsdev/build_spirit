@@ -36,10 +36,10 @@ function masterLoop ( garmentsNeeded )
 		prodFolder = Folder( prodFolderPath );
 		if ( !prodFolder.exists ) prodFolder.create();
 
-		if ( curGarment.age === "youth" )
-		{
-			curGarment.garCode = curGarment.mid + ( curGarment.mid.match( /w/i ) ? "G" : "Y" ) + "_" + curGarment.styleNum;
-		}
+		// if ( curGarment.age === "youth" )
+		// {
+		// 	curGarment.garCode = curGarment.mid + ( curGarment.mid.match( /w/i ) ? "G" : "Y" ) + "_" + curGarment.styleNum;
+		// }
 
 		var prodFileName = prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai";
 		var prodFile = File( prodFileName );
