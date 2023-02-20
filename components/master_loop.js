@@ -38,7 +38,8 @@ function masterLoop ( garmentsNeeded )
 
 		if ( curGarment.age === "youth" )
 		{
-			curGarment.garCode = curGarment.mid + ( curGarment.mid.match( /w/i ) ? "G" : "Y" ) + "_" + curGarment.styleNum;
+			curGarment.mid = curGarment.mid.match( /w/i ) ? curGarment.mid.replace( /w/i, "G" ) : curGarment.mid + "Y";
+			curGarment.garCode = curGarment.mid + "_" + curGarment.styleNum;
 		}
 
 		var prodFileName = prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai";
