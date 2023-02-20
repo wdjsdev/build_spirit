@@ -22,7 +22,7 @@ function container ()
 	var valid = true;
 	var scriptName = "build_spirit_offering";
 
-	ffunction getUtilities()
+	function getUtilities ()
 	{
 		var utilNames = [ "Utilities_Container" ]; //array of util names
 		var utilFiles = []; //array of util files
