@@ -5,7 +5,7 @@ function parseSpiritData ( data )
 	var garmentsNeeded = [];
 
 	var curGarGroup;
-	var curSize, curStyleNum, curPlayer;
+	var curSize, curPlayer;
 	var curGN;
 	var playerLen = 0;
 	for ( var gar in data ) 
@@ -22,8 +22,8 @@ function parseSpiritData ( data )
 		{
 			if ( !curGN )
 			{
-				var curMid = curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}/i ) ? curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}/i )[ 0 ] : null;
-				var curStyleNum = curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}/i ) ? curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}/i )[ 0 ] : null
+				var curMid = curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i ) ? curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i )[ 0 ] : null;
+				var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
 				var refOrder = curGar.reforder;
 				curGN = {
 					"groupName": gar,
@@ -37,7 +37,7 @@ function parseSpiritData ( data )
 					"label": curGar.style
 				};
 				garmentsNeeded.push( curGN );
-				log.l( "initialized garmentsNeeded[" + x + "] = " + JSON.stringify( curGN ) );
+				log.l( "initialized garmentsNeeded[" + garmentsNeeded.length - 1 + "] = " + JSON.stringify( curGN ) );
 			}
 
 			curSize = curGar.itemtext.substring( curGar.itemtext.lastIndexOf( "-" ) + 1, curGar.itemtext.length );
