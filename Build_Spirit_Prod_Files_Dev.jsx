@@ -90,7 +90,7 @@ function container ()
 	//first get the build prod file components
 	scriptTimer.beginTask( "getComponents" );
 
-	var buildProdCompPath = componentsPath + "build_prod_file_beta";
+	var buildProdCompPath = componentsPath + "build_prod_file";
 	var buildProdCompDevPath = desktopPath + "automation/build_prod_file/components";
 	var buildProdCompFiles = getComponents( $.fileName.indexOf( "Dev.jsx" ) > -1 ? buildProdCompDevPath : buildProdCompPath )
 	// var buildProdCompFiles = getComponents(buildProdCompDevPath);

@@ -56,6 +56,8 @@ function parseSpiritData ( data )
 				number: curGar.playernumber || ""
 			};
 
+			curPlayer.label = ( curPlayer.name || "(no_name)" ) + " " + ( curPlayer.number || "(no_number)" ) + ( curPlayer.extraInfo ? " " + curPlayer.extraInfo : "" );
+
 
 			curGN.roster[ curSize ].players.push( curPlayer );
 
