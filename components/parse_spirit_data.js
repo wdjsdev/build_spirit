@@ -23,7 +23,12 @@ function parseSpiritData ( data )
 			if ( !curGN )
 			{
 				var curMid = curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i ) ? curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i )[ 0 ] : null;
-				var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
+				// var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
+				var curStyleNum = gar.match( /\d{4,5}/ig );
+				curStyleNum = curStyleNum ? curStyleNum[ curStyleNum.length - 1 ] : null;
+				var colorsCalledOut = curGar.style.match( /-([\s\-a-z]*$)/i ) ? curGar.style.match( /-([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
+
+
 				var refOrder = curGar.reforder;
 
 				curGN = {
@@ -35,7 +40,8 @@ function parseSpiritData ( data )
 					"styleNum": curStyleNum,
 					"garCode": curMid + "_" + curStyleNum,
 					"age": gar.split( "_" )[ 0 ].match( /yg/i ) ? "youth" : "adult",
-					"label": curGar.style
+					"label": curGar.style,
+					"cco": colorsCalledOut.replace( /^-/, "" )
 				};
 				garmentsNeeded.push( curGN );
 				log.l( "initialized garmentsNeeded[" + ( garmentsNeeded.length - 1 ) + "] = " + JSON.stringify( curGN ) );
