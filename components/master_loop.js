@@ -41,7 +41,8 @@ function masterLoop ( garmentsNeeded )
 			curGarment.garCode = curGarment.mid + ( curGarment.mid.match( /w/i ) ? "G" : "Y" ) + "_" + curGarment.styleNum;
 		}
 
-		var prodFileName = prodFolderPath + programId + "_" + curGarment.garCode + "_prod.ai";
+
+		var prodFileName = prodFolderPath + curGarment.garCode + "_" + curGarment.cco + "prod.ai";
 		var prodFile = File( prodFileName );
 		var prodDoc = app.documents.add();
 		prodDoc.layers[ 0 ].name = "Artwork";
