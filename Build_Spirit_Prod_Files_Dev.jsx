@@ -203,7 +203,6 @@ function container ()
 	if ( valid )
 	{
 		orderData = getSpiritData( programId );
-		// writeReadMe( Folder( "~/Desktop/temp/" ), JSON.stringify( orderData ) );
 	}
 
 	if ( valid )
