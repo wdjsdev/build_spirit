@@ -29,7 +29,7 @@ function parseSpiritData ( data )
 				var colorsCalledOut = curGar.style.match( /-([\s\-a-z]*$)/i ) ? curGar.style.match( /-([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
 
 
-				var refOrder = curGar.reforder;
+				var refOrder = curGar.reforder || "";
 
 				curGN = {
 					"groupName": gar,
