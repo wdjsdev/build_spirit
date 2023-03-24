@@ -51,6 +51,8 @@ function parseSpiritData ( data )
 			if ( curSize.match( /y/i ) )
 			{
 				curGN.age = "youth";
+				curGN.mid = curGN.mid.match( /[wg]$/i ) ? curGN.mid.replace( /w$/i, "G" ) : curGN.mid + "Y";
+				curGN.garCode = curGN.mid + "_" + curGN.styleNum;
 			}
 
 			if ( !curGN.roster[ curSize ] )
