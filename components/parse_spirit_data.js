@@ -27,9 +27,9 @@ function parseSpiritData ( data )
 				var curStyleNum = gar.match( /\d{4,5}/ig );
 				curStyleNum = curStyleNum ? curStyleNum[ curStyleNum.length - 1 ] : null;
 				var colorsCalledOut = curGar.style.match( /-([\s\-a-z]*$)/i ) ? curGar.style.match( /-([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
-
-
 				var refOrder = curGar.reforder || "";
+
+				var curPlayersString, curRoster;
 
 				curGN = {
 					"groupName": gar,
@@ -48,29 +48,39 @@ function parseSpiritData ( data )
 			}
 
 			curSize = curGar.itemtext.substring( curGar.itemtext.lastIndexOf( "-" ) + 1, curGar.itemtext.length );
-			if ( curSize.match( /y/i ) )
+			if ( curSize.match( /y/i ) && !curGN.mid.match( /[yg]$/i ) )
 			{
 				curGN.age = "youth";
 				curGN.mid = curGN.mid.match( /[wg]$/i ) ? curGN.mid.replace( /w$/i, "G" ) : curGN.mid + "Y";
 				curGN.garCode = curGN.mid + "_" + curGN.styleNum;
 			}
 
-			if ( !curGN.roster[ curSize ] )
+			if ( curGar.inseam )
 			{
-				curGN.roster[ curSize ] = { "players": [] };
+				curGN.var = true; //this garment has a variable inseam
+				var curWaist = curSize;
+				curSize = curGar.inseam;
+				curGN.roster[ curSize ] = curGN.roster[ curSize ] || {};
+				curGN.roster[ curSize ][ curWaist ] = curGN.roster[ curSize ][ curWaist ] || { "players": "" };
+				curRoster = curGN.roster[ curSize ][ curWaist ];
 			}
+			else
+			{
+				if ( !curGN.roster[ curSize ] )
+				{
+					curGN.roster[ curSize ] = { "players": "" };
+				}
+				curRoster = curGN.roster[ curSize ];
+			}
+			curPlayersString = curRoster.players;
 
-			curPlayer = {
-				name: curGar.playername || "",
-				number: curGar.playernumber || ""
-			};
+			curPlayer = curGar.playernumber ? curGar.playernumber + " " : "";
+			curPlayer += curGar.playername ? curGar.playername : "";
 
-			curPlayer.label = ( curPlayer.name || "(no_name)" ) + " " + ( curPlayer.number || "(no_number)" ) + ( curPlayer.extraInfo ? " " + curPlayer.extraInfo : "" );
 
-			var blah = curGN;
-			curGN.roster[ curSize ].players.push( curPlayer );
+			curPlayersString += curPlayer + "\n";
 
-			curGN.roster[ curSize ].qty = curGN.roster[ curSize ].players.length;
+			curRoster.qty = curPlayersString.length;
 		} );
 		playerLen = 0;
 	}
