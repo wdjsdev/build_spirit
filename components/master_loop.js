@@ -18,6 +18,7 @@ function masterLoop ( garmentsNeeded )
 
 	garments.forEach( function ( curGarment )
 	{
+		log.l( "Processing garment: " + curGarment.garCode );
 		prepressFile = findPrepressFile( curGarment );
 
 
@@ -48,6 +49,8 @@ function masterLoop ( garmentsNeeded )
 		prodDoc.layers[ 0 ].name = "Artwork";
 		prodDoc.saveAs( prodFile );
 
+		log.l( "Created the production file: " + prodFile.name );
+		log.l( "Opening the prepress file: " + prepressFile.name );
 
 
 		//open the prepress
@@ -61,11 +64,15 @@ function masterLoop ( garmentsNeeded )
 			return;
 		}
 
+		log.l( "Found the garment layer for: " + curGarment.garCode + ", " + prepressGarmentLayer.name );
+
 		var artworkDuplicationGroup = prepressGarmentLayer.groupItems.add();
 
 		var prepressLayer = findSpecificLayer( prepressGarmentLayer.layers, "Prepress", "any" );
-		var curSizeLayer;
 
+		fixImproperWomensSizing( prepressLayer );
+
+		var curSizeLayer;
 		for ( var size in curGarment.roster )
 		{
 			curSizeLayer = findSpecificLayer( prepressLayer.layers, new RegExp( "^" + size + "w?", "i" ) );
@@ -94,6 +101,14 @@ function masterLoop ( garmentsNeeded )
 			}
 		}
 
+		log.l( "Duplicating " + artworkDuplicationGroup.pageItems.length + " page items to the production file." )
+
+		if ( !artworkDuplicationGroup.pageItems.length )
+		{
+			errorList.push( "No prepress artwork found for: " + curGarment.garCode );
+			log.e( "No prepress artwork found for: " + curGarment.garCode );
+			return;
+		}
 
 		var prodDocArtGroup = artworkDuplicationGroup.duplicate( prodDoc.layers[ 0 ] );
 

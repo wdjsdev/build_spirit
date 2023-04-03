@@ -44,7 +44,6 @@ function parseSpiritData ( data )
 					"cco": colorsCalledOut.replace( /^-/, "" )
 				};
 				garmentsNeeded.push( curGN );
-				log.l( "initialized garmentsNeeded[" + ( garmentsNeeded.length - 1 ) + "] = " + JSON.stringify( curGN ) );
 			}
 
 			curSize = curGar.itemtext.substring( curGar.itemtext.lastIndexOf( "-" ) + 1, curGar.itemtext.length );
@@ -81,6 +80,7 @@ function parseSpiritData ( data )
 
 			curRoster.qty = curRoster.players.split( "\n" ).length - 1;
 		} );
+		log.l( "curGN = " + JSON.stringify( curGN ) );
 		playerLen = 0;
 	}
 
