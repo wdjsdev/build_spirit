@@ -12,7 +12,7 @@ function findPrepressFile ( garment )
 	findInFiles( files, searchTerm );
 	if ( !result )
 	{
-		findInFiles( files, code.replace( /[yg]/i, "" ) );
+		findInFiles( files, code.replace( /y/i, "" ).replace( /g/i, "W" ) );
 	}
 
 

@@ -71,14 +71,7 @@ function masterLoop ( garmentsNeeded )
 			curSizeLayer = findSpecificLayer( prepressLayer.layers, new RegExp( "^" + size + "w?", "i" ) );
 			if ( !curSizeLayer ) continue;
 
-			if ( curGarment.roster[ size ].players )
-			{
-				afc( curSizeLayer, "groupItems" ).forEach( function ( pi )
-				{
-					pi.duplicate( artworkDuplicationGroup, ElementPlacement.PLACEATEND )
-				} )
-			}
-			else
+			if ( curGarment.var )
 			{
 				for ( var curWaist in curGarment.roster[ size ] )
 				{
@@ -91,6 +84,13 @@ function masterLoop ( garmentsNeeded )
 						pi.duplicate( artworkDuplicationGroup, ElementPlacement.PLACEATEND )
 					} )
 				}
+			}
+			else
+			{
+				afc( curSizeLayer, "groupItems" ).forEach( function ( pi )
+				{
+					pi.duplicate( artworkDuplicationGroup, ElementPlacement.PLACEATEND )
+				} )
 			}
 		}
 

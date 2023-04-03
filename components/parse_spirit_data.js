@@ -26,7 +26,7 @@ function parseSpiritData ( data )
 				// var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
 				var curStyleNum = gar.match( /\d{4,5}/ig );
 				curStyleNum = curStyleNum ? curStyleNum[ curStyleNum.length - 1 ] : null;
-				var colorsCalledOut = curGar.style.match( /-([\s\-a-z]*$)/i ) ? curGar.style.match( /-([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
+				var colorsCalledOut = curGar.style.match( /-?([\s\-a-z]*$)/i ) ? curGar.style.match( /-?([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
 				var refOrder = curGar.reforder || "";
 
 				var curPlayersString, curRoster;
@@ -55,6 +55,8 @@ function parseSpiritData ( data )
 				curGN.garCode = curGN.mid + "_" + curGN.styleNum;
 			}
 
+			curSize = curSize.replace( /\//g, "-" );
+
 			if ( curGar.inseam )
 			{
 				curGN.var = true; //this garment has a variable inseam
@@ -72,15 +74,12 @@ function parseSpiritData ( data )
 				}
 				curRoster = curGN.roster[ curSize ];
 			}
-			curPlayersString = curRoster.players;
 
 			curPlayer = curGar.playernumber ? curGar.playernumber + " " : "";
 			curPlayer += curGar.playername ? curGar.playername : "";
+			curRoster.players += curPlayer + "\n";
 
-
-			curPlayersString += curPlayer + "\n";
-
-			curRoster.qty = curPlayersString.length;
+			curRoster.qty = curRoster.players.split( "\n" ).length - 1;
 		} );
 		playerLen = 0;
 	}
