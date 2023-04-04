@@ -74,8 +74,8 @@ function parseSpiritData ( data )
 				curRoster = curGN.roster[ curSize ];
 			}
 
-			curPlayer = curGar.playernumber ? curGar.playernumber + " " : "";
-			curPlayer += curGar.playername ? curGar.playername : "";
+			curPlayer = ( curGar.playernumber ? curGar.playernumber : "(no number)" ) + " ";
+			curPlayer += curGar.playername ? curGar.playername : "(no name)";
 			curRoster.players += curPlayer + "\n";
 
 			curRoster.qty = curRoster.players.split( "\n" ).length - 1;
