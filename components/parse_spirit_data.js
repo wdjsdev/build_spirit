@@ -26,7 +26,9 @@ function parseSpiritData ( data )
 				// var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
 				var curStyleNum = gar.match( /\d{4,5}/ig );
 				curStyleNum = curStyleNum ? curStyleNum[ curStyleNum.length - 1 ] : null;
-				var colorsCalledOut = curGar.style.match( /-?([\s\-a-z]*$)/i ) ? curGar.style.match( /-?([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
+				var cgStyle = curGar.style.replace( /[-_\s][a-z0-9]{12}/i, "" );
+				var colorsCalledOut = cgStyle.match( /-?([\s\-a-z]*$)/i ) ? cgStyle.match( /-?([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
+				colorsCalledOut = colorsCalledOut.replace( /^[-_]/, "" )
 				var refOrder = curGar.reforder || "";
 
 				var curPlayersString, curRoster;
@@ -41,7 +43,7 @@ function parseSpiritData ( data )
 					"garCode": curMid + "_" + curStyleNum,
 					"age": gar.split( "_" )[ 0 ].match( /yg/i ) ? "youth" : "adult",
 					"label": curGar.style,
-					"cco": colorsCalledOut.replace( /^-/, "" )
+					"cco": colorsCalledOut
 				};
 				garmentsNeeded.push( curGN );
 			}
