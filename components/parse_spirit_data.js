@@ -24,8 +24,10 @@ function parseSpiritData ( data )
 			{
 				var curMid = curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i ) ? curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i )[ 0 ] : null;
 				// var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
-				var curStyleNum = gar.match( /[-_\s](\d{4,5})[-_\s]/ig );
-				curStyleNum = curStyleNum ? curStyleNum[ curStyleNum.length - 1 ] : null;
+				var styleMatch = gar.match( /[-_\s](\d{4,5})[-_\s]/ig );
+				var curStyleNum = styleMatch ? styleMatch[ styleMatch.length - 1 ] : null;
+				curStyleNum ? ( curStyleNum = curStyleNum.replace( /[-_\s]/g, "" ) ) : null;
+				// curStyleNum ? ( curStyleNum = curStyleNum[ curStyleNum.length - 1 ].replace( /[-_\s]/g ), "" ) : null;
 				var cgStyle = curGar.style.replace( /[-_\s][a-z0-9]{12}/i, "" );
 				var colorsCalledOut = cgStyle.match( /-?([\s\-a-z]*$)/i ) ? cgStyle.match( /-?([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
 				colorsCalledOut = colorsCalledOut.replace( /^[-_]/, "" )
