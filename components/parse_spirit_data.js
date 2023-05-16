@@ -23,11 +23,11 @@ function parseSpiritData ( data )
 			if ( !curGN )
 			{
 				var curMid = curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i ) ? curGar.style.match( /[fdbmps]{2,3}[-_][0-9]{3,5}[wyg]?/i )[ 0 ] : null;
-				// var curStyleNum = gar.replace( /.*-/ig, "" ).replace( /[\s-_].*/ig, "" );
-				var styleMatch = gar.match( /[-_\s](\d{4,5})[-_\s]/ig );
+
+				var styleMatch = curGar.style.split( /[-_\s]/ ).filter( function ( el ) { return el.match( /^\d{4,5}$/ ); } )
 				var curStyleNum = styleMatch ? styleMatch[ styleMatch.length - 1 ] : null;
 				curStyleNum ? ( curStyleNum = curStyleNum.replace( /[-_\s]/g, "" ) ) : null;
-				// curStyleNum ? ( curStyleNum = curStyleNum[ curStyleNum.length - 1 ].replace( /[-_\s]/g ), "" ) : null;
+
 				var cgStyle = curGar.style.replace( /[-_\s][a-z0-9]{12}/i, "" );
 				var colorsCalledOut = cgStyle.match( /-?([\s\-a-z]*$)/i ) ? cgStyle.match( /-?([\s\-a-z]*$)/i )[ 1 ] + "_" : "";
 				colorsCalledOut = colorsCalledOut.replace( /^[-_]/, "" )
@@ -50,12 +50,23 @@ function parseSpiritData ( data )
 				garmentsNeeded.push( curGN );
 			}
 
-			curSize = curGar.itemtext.substring( curGar.itemtext.lastIndexOf( "-" ) + 1, curGar.itemtext.length );
-			if ( curSize.match( /y/i ) && !curGN.mid.match( /[yg]$/i ) )
+			//check if this garment is a bag
+			//if so, use the size "ONE PIECE"
+			//otherwise, parse the size from the itemtext field
+			if ( isBagCode( curGN.mid ) )
 			{
-				curGN.age = "youth";
-				curGN.mid = curGN.mid.match( /[wg]$/i ) ? curGN.mid.replace( /w$/i, "G" ) : curGN.mid + "Y";
-				curGN.garCode = curGN.mid + "_" + curGN.styleNum;
+				curSize = "ONE PIECE";
+			}
+			else 
+			{
+				curSize = curGar.itemtext.replace( /.*-/, "" );
+				if ( curSize.match( /y/i ) && !curGN.mid.match( /[yg]$/i ) )
+				{
+					curGN.age = "youth";
+					curGN.mid = curGN.mid.match( /[wg]$/i ) ? curGN.mid.replace( /w$/i, "G" ) : curGN.mid + "Y";
+					curGN.garCode = curGN.mid + "_" + curGN.styleNum;
+				}
+
 			}
 
 			curSize = curSize.replace( /\//g, "-" );
