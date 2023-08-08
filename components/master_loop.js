@@ -46,6 +46,7 @@ function masterLoop ( garmentsNeeded )
 		var prodFileName = prodFolderPath + curGarment.garCode + "_" + curGarment.cco + "prod.ai";
 		var prodFile = File( prodFileName );
 		var prodDoc = app.documents.add();
+		curGarment.prodFile = prodDoc;
 		prodDoc.layers[ 0 ].name = "Artwork";
 		prodDoc.saveAs( prodFile );
 
@@ -55,6 +56,13 @@ function masterLoop ( garmentsNeeded )
 
 		//open the prepress
 		prepressDoc = app.open( prepressFile );
+		curGarment.prepressDoc = prepressDoc;
+
+		//normalize the garment layer names
+		afc( prepressDoc, "layers" ).forEach( function ( l )
+		{
+			l.name = l.name.replace( /[-]/g, "_" ).replace( /_/, "-" );
+		} );
 
 		var prepressGarmentLayer = findSpecificLayer( prepressDoc.layers, curGarment.garCode, "any" );
 		if ( !prepressGarmentLayer )
