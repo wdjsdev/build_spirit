@@ -16,7 +16,7 @@ function masterLoop ( garmentsNeeded )
 
 	var garments = garmentsNeeded.filter( function ( g ) { return chosenGarmentCodes.indexOf( g.label ) > -1 } )
 
-	garments.forEach( function ( curGarment )
+	garments.forEach( function ( curGarment, index )
 	{
 		log.l( "Processing garment: " + curGarment.garCode );
 		prepressFile = findPrepressFile( curGarment );
@@ -43,12 +43,12 @@ function masterLoop ( garmentsNeeded )
 		// }
 
 
-		var prodFileName = prodFolderPath + curGarment.garCode + "_" + curGarment.cco + "prod.ai";
+		var prodFileName = prodFolderPath + curGarment.garCode + "_" + index + "_" + curGarment.cco + "prod.ai";
 		var prodFile = File( prodFileName );
 		var prodDoc = app.documents.add();
-		curGarment.prodFile = prodDoc;
 		prodDoc.layers[ 0 ].name = "Artwork";
 		prodDoc.saveAs( prodFile );
+		curGarment.prodFile = prodDoc;
 
 		log.l( "Created the production file: " + prodFile.name );
 		log.l( "Opening the prepress file: " + prepressFile.name );
