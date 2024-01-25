@@ -38,13 +38,13 @@ function parseSpiritData ( data )
 				curGN = {
 					"groupName": gar,
 					"mid": curMid,
-					"designNumber": refOrder.match( /[a-z0-9]{12}/i ) ? refOrder.match( /[a-z0-9]{12}/i )[ 0 ] : null,
-					"orderNumber": refOrder.match( /[0-9]{7}/i ) ? refOrder.match( /[0-9]{7}/i )[ 0 ] : null,
+					"designNumber": refOrder.match( /[a-z0-9]{12}/i ) ? refOrder.match( /[a-z0-9]{12}/i )[ 0 ] : "",
+					"orderNumber": refOrder.match( /[0-9]{7}/i ) ? refOrder.match( /[0-9]{7}/i )[ 0 ] : "",
 					"roster": {},
 					"styleNum": curStyleNum,
 					"garCode": curMid + "_" + curStyleNum,
 					"age": gar.split( "_" )[ 0 ].match( /yg/i ) ? "youth" : "adult",
-					"label": curGar.style,
+					"label": curGar.style.replace( /_[a-z0-9]{12}/i, "" ),
 					"cco": colorsCalledOut
 				};
 				garmentsNeeded.push( curGN );

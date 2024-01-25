@@ -1,6 +1,18 @@
 function masterLoop ( garmentsNeeded )
 {
-
+	var usedCodes = [];
+	garmentsNeeded.backForEach( function ( g )
+	{
+		// $.writeln( g.garCode );
+		// $.writeln( g.label );
+		// $.writeln( g.designNumber );
+		// $.writeln( "\n\n\n" );
+		var codeMatches = garmentsNeeded.filter( function ( gc ) { return gc.garCode === g.garCode } );
+		if ( codeMatches.length > 1 )
+		{
+			g.garmentIndex = codeMatches.length + 1;
+		}
+	} )
 
 	var listboxGarmentCodes = garmentsNeeded.map( function ( g )
 	{
@@ -42,8 +54,7 @@ function masterLoop ( garmentsNeeded )
 		// 	curGarment.garCode = curGarment.mid + ( curGarment.mid.match( /w/i ) ? "G" : "Y" ) + "_" + curGarment.styleNum;
 		// }
 
-
-		var prodFileName = prodFolderPath + curGarment.garCode + "_" + index + "_" + curGarment.cco + "prod.ai";
+		var prodFileName = prodFolderPath + curGarment.garCode + "_" + ( curGarment.designNumber ? curGarment.designNumber + "_" : ( curGarment.garmentIndex ? curGarmentIndex + "_" : "" ) ) + curGarment.cco + "prod.ai";
 		var prodFile = File( prodFileName );
 		var prodDoc = app.documents.add();
 		prodDoc.layers[ 0 ].name = "Artwork";
